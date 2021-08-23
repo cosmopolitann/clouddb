@@ -714,13 +714,11 @@ func (db *Sql) ChatUserIdList(dInfo string) string {
 }
 
 // ChatUsersUpdate 更新用户信息
-func (db *Sql) ChatUsersUpdate(dInfo string) string {
+func (db *Sql) ChatUsersUpdate(dInfo string) error {
 
-	e := ChatUsersUpdate(db, dInfo)
-	if e != nil {
-		return vo.ResponseErrorMsg(400, e.Error())
-	}
-	return vo.ResponseSuccess()
+	err := ChatUsersUpdate(db, dInfo)
+
+	return err
 }
 
 /*
