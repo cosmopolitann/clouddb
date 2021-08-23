@@ -171,7 +171,7 @@ func ChatListenMsgBlocked(ipfsNode *ipfsCore.IpfsNode, db *Sql, token string, cl
 
 			sugar.Log.Debugf("message receive: %s\n", data.Data)
 
-			res, err := handleNewMsg(db, tmp)
+			res, isFirst, err := handleNewMsg(db, tmp)
 			if err != nil {
 				if err != vo.ErrorRowIsExists {
 					sugar.Log.Error("handle add message failed.", err)
@@ -198,6 +198,34 @@ func ChatListenMsgBlocked(ipfsNode *ipfsCore.IpfsNode, db *Sql, token string, cl
 			if err != nil {
 				sugar.Log.Error("sendMsgAck failed.", err)
 				// 只记录日志，继续允许
+			}
+
+			if isFirst {
+				recordMsg := vo.ChatPacketParams{
+					Type: vo.MSG_TYPE_RECORD,
+					Data: vo.ChatRecordInfo{
+						Id:      res.RecordId,
+						Name:    "",
+						Img:     "",
+						FromId:  res.FromId,
+						Toid:    res.ToId,
+						Ptime:   res.Ptime,
+						LastMsg: "",
+
+						UserName: "",
+						Phone:    "",
+						PeerId:   "",
+						NickName: "",
+						Sex:      0,
+					},
+					From: "",
+				}
+
+				recordMsgStr, err := json.Marshal(recordMsg)
+				if err != nil {
+					sugar.Log.Error("build record msg failed.", err)
+				}
+				clh.HandlerChat(string(recordMsgStr))
 			}
 
 			clh.HandlerChat(string(jsonStr))
@@ -570,7 +598,7 @@ func handleWithdrawMsg(db *Sql, msg vo.ChatSwapWithdrawMsgParams) (ChatMsg, erro
 }
 
 // handleNewMsg 新增消息
-func handleNewMsg(db *Sql, msg vo.ChatSwapMsgParams) (ChatMsg, error) {
+func handleNewMsg(db *Sql, msg vo.ChatSwapMsgParams) (ChatMsg, bool, error) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -578,6 +606,7 @@ func handleNewMsg(db *Sql, msg vo.ChatSwapMsgParams) (ChatMsg, error) {
 		}
 	}()
 
+	var isFirstMsg bool
 	var recordId string
 
 	ret := ChatMsg{
@@ -598,22 +627,23 @@ func handleNewMsg(db *Sql, msg vo.ChatSwapMsgParams) (ChatMsg, error) {
 	case bsql.ErrNoRows:
 		ftid := strings.Split(ret.RecordId, "_")
 		if len(ftid) < 2 {
-			return ret, errors.New("recorId error: " + ret.RecordId)
+			return ret, isFirstMsg, errors.New("recorId error: " + ret.RecordId)
 		}
 
 		res, err := db.DB.Exec("INSERT INTO chat_record (id, name, from_id, to_id, ptime, last_msg) values (?, ?, ?, ?, ?, ?)",
 			ret.RecordId, "", ftid[0], ftid[1], ret.Ptime, ret.Content)
 		if err != nil {
-			return ret, err
+			return ret, isFirstMsg, err
 		}
 		_, err = res.LastInsertId()
 		if err != nil {
-			return ret, err
+			return ret, isFirstMsg, err
 		}
+		isFirstMsg = true
 	case nil:
 		// nothing
 	default:
-		return ret, err
+		return ret, isFirstMsg, err
 	}
 
 	// 检查消息是否重复
@@ -623,23 +653,23 @@ func handleNewMsg(db *Sql, msg vo.ChatSwapMsgParams) (ChatMsg, error) {
 		res, err := db.DB.Exec("INSERT INTO chat_msg (id, content_type, content, from_id, to_id, ptime, is_with_draw, is_read, record_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 			ret.Id, ret.ContentType, ret.Content, ret.FromId, ret.ToId, ret.Ptime, ret.IsWithdraw, ret.IsRead, ret.RecordId)
 		if err != nil {
-			return ret, err
+			return ret, isFirstMsg, err
 		}
 		_, err = res.LastInsertId()
 		if err != nil {
-			return ret, err
+			return ret, isFirstMsg, err
 		}
 
 		_, err = db.DB.Exec("UPDATE chat_record SET last_msg = ?, ptime = ? WHERE id = ?", ret.Content, ret.Ptime, ret.RecordId)
 		if err != nil {
-			return ret, err
+			return ret, isFirstMsg, err
 		}
 
-		return ret, nil
+		return ret, isFirstMsg, nil
 
 	case nil:
-		return ret, vo.ErrorRowIsExists
+		return ret, isFirstMsg, vo.ErrorRowIsExists
 	default:
-		return ret, err
+		return ret, isFirstMsg, err
 	}
 }

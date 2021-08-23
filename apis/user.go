@@ -91,5 +91,4 @@ type UserModel struct {
 	LikeNum    int64  `json:"likeNum"`    // 点赞数
 	ArticleNum int64  `json:"articleNum"` // 发布数
 	Role       string `json:"role"`       // 角色
-
 }

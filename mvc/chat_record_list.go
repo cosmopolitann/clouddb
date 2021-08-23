@@ -4,11 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"regexp"
 	"time"
 
-	"github.com/cosmopolitann/clouddb/apis"
 	"github.com/cosmopolitann/clouddb/jwt"
 	"github.com/cosmopolitann/clouddb/sugar"
 	"github.com/cosmopolitann/clouddb/vo"
@@ -64,7 +62,9 @@ func ChatRecordList(db *Sql, value string) ([]vo.ChatRecordRespListParams, error
 		}
 	}
 
-	user, err := apis.GetUserInfo(req.Token, userId)
+	var user SysUser
+
+	err = db.DB.QueryRow("SELECT id, IFNULL(peer_id, ''), IFNULL(name, ''), IFNULL(nickname, ''), IFNULL(phone, ''), IFNULL(sex, 0), IFNULL(img, ''), IFNULL(role, '2') FROM sys_user WHERE id = ?", userId).Scan(&user.Id, &user.PeerId, &user.Name, &user.NickName, &user.Phone, &user.Sex, &user.Img, &user.Role)
 	if err != nil {
 		sugar.Log.Error("query user info failed.Err is ", err)
 		return ret, err
@@ -73,56 +73,22 @@ func ChatRecordList(db *Sql, value string) ([]vo.ChatRecordRespListParams, error
 	sugar.Log.Debugf("Get User: %#v", user)
 
 	// 查询会话列表
-	rows, err := db.DB.Query("SELECT id, from_id, to_id, ptime, last_msg FROM chat_record WHERE from_id = ? OR to_id = ? ORDER BY ptime DESC", userId, userId)
+	rows, err := db.DB.Query("SELECT id, from_id, to_id, ptime, last_msg FROM chat_record WHERE from_id = ? OR to_id = ? ORDER BY ptime DESC", user.Id, user.Id)
 	if err != nil {
 		sugar.Log.Error("Query data is failed.Err is ", err)
 	}
 	// 释放锁
 	defer rows.Close()
 
-	var records []vo.ChatRecored
-	mapUserIds := make(map[string]string)
 	for rows.Next() {
-		var ri vo.ChatRecored
+		var ri vo.ChatRecordRespListParams
 		err := rows.Scan(&ri.Id, &ri.FromId, &ri.ToId, &ri.Ptime, &ri.LastMsg)
 		if err != nil {
 			sugar.Log.Error("Query data is failed.Err is ", err)
 			return ret, err
 		}
 
-		records = append(records, ri)
-
-		mapUserIds[ri.FromId] = ri.FromId
-		mapUserIds[ri.ToId] = ri.ToId
-	}
-
-	if len(mapUserIds) > 0 {
-		var userIds []string
-		for _, userId := range mapUserIds {
-			userIds = append(userIds, userId)
-		}
-		uModels, err := apis.GetUsers(req.Token, userIds)
-		if err == nil {
-			for _, u := range uModels {
-				_, err := db.DB.Exec("INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, ptime, utime, nickname, img, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-					u.Id, u.PeerId, u.Name, u.Phone, u.Sex, u.Ptime, u.Utime, u.Nickname, u.Img, u.Role)
-				if err != nil {
-					return ret, fmt.Errorf("update user err: %w", err)
-				}
-			}
-		} else {
-			sugar.Log.Error("apis.GetUsers err:", err)
-		}
-	}
-
-	for _, record := range records {
-		ri := vo.ChatRecordRespListParams{
-			Id:      record.Id,
-			FromId:  record.FromId,
-			ToId:    record.ToId,
-			Ptime:   record.Ptime,
-			LastMsg: record.LastMsg,
-		}
+		sugar.Log.Debug(ri)
 
 		peerId := ""
 
@@ -133,7 +99,7 @@ func ChatRecordList(db *Sql, value string) ([]vo.ChatRecordRespListParams, error
 			ri.FromImg = user.Img
 			ri.FromPhone = user.Phone
 			ri.FromPeerId = user.PeerId
-			ri.FromNickName = user.Nickname
+			ri.FromNickName = user.NickName
 			ri.FromSex = user.Sex
 		}
 
@@ -144,8 +110,9 @@ func ChatRecordList(db *Sql, value string) ([]vo.ChatRecordRespListParams, error
 			ri.ToImg = user.Img
 			ri.ToPhone = user.Phone
 			ri.ToPeerId = user.PeerId
-			ri.ToNickName = user.Nickname
+			ri.ToNickName = user.NickName
 			ri.ToSex = user.Sex
+
 		}
 
 		sugar.Log.Debugf("Get Record %#v", ri)
@@ -157,7 +124,6 @@ func ChatRecordList(db *Sql, value string) ([]vo.ChatRecordRespListParams, error
 				sugar.Log.Error("query peer info failed.Err is ", err)
 				return ret, err
 			}
-
 			// not found peer
 			var fnickname string
 			err := db.DB.QueryRow("SELECT friend_nickname FROM user_friend WHERE user_id = ? AND friend_id = ?", userId, peerId).Scan(&fnickname)
