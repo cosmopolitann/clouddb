@@ -2,6 +2,7 @@ package mvc
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -44,6 +45,24 @@ func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, e
 	if userId != msg.FromId {
 		sugar.Log.Error("token is not msg.from_id")
 		return ret, errors.New("token is not msg.from_id")
+	}
+
+	peer := msg.Peer
+	if peer.Id != "" {
+		var peerId string
+		err = db.DB.QueryRow("SELECT id FROM sys_user WHERE id = ?", peer.Id).Scan(&peerId)
+		if err != nil && err != sql.ErrNoRows {
+			sugar.Log.Error("query user info failed.Err is ", err)
+			return ret, err
+		}
+
+		if peerId == "" {
+			_, err = db.DB.Exec("INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, nickname, img) VALUES (?, ?, ?, ?, ?, ?, ?)",
+				peer.Id, peer.PeerId, peer.Name, "", peer.Sex, peer.Nickname, peer.Img)
+			if err != nil {
+				return ret, err
+			}
+		}
 	}
 
 	var user vo.ChatUserInfo

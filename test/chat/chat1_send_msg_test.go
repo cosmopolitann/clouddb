@@ -40,6 +40,14 @@ func TestChatSendMsg(t *testing.T) {
 		FromId:      "416418922095452160",
 		ToId:        "416203556291354624",
 		Token:       token,
+		Peer: vo.ChatUserInfo{
+			Id:       "416203556291354624",
+			PeerId:   "xxxxyyyyy",
+			Name:     "ooxxyy",
+			Sex:      1,
+			Nickname: "nickname222",
+			Img:      "imgabcdxxx",
+		},
 	}
 	value, _ := json.Marshal(req)
 

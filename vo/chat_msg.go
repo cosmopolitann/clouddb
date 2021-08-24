@@ -27,12 +27,13 @@ type ChatPacketParams struct {
 }
 
 type ChatSendMsgParams struct {
-	RecordId    string `json:"recordId"`    //require     coment 消息记录id
-	ContentType int64  `json:"contentType"` //       1 文本  2 表情 3 图片 4 文件
-	Content     string `json:"content"`     // require     coment 消息内容
-	FromId      string `json:"fromId"`      //require     coment 发送方id
-	ToId        string `json:"toId"`        //require     coment 对方id
-	Token       string `json:"token"`       //token
+	RecordId    string       `json:"recordId"`    //require     coment 消息记录id
+	ContentType int64        `json:"contentType"` //       1 文本  2 表情 3 图片 4 文件
+	Content     string       `json:"content"`     // require     coment 消息内容
+	FromId      string       `json:"fromId"`      //require     coment 发送方id
+	ToId        string       `json:"toId"`        //require     coment 对方id
+	Token       string       `json:"token"`       //token
+	Peer        ChatUserInfo `json:"peer"`        // peer
 }
 
 type ChatReadMsgParams struct {
