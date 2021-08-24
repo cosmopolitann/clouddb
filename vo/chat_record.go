@@ -89,16 +89,10 @@ type ChatUserIdListParams struct {
 }
 
 type ChatUserInfo struct {
-	Id         string `json:"id"`         // 用户ID
-	PeerId     string `json:"peerId"`     // 用户Peerid
-	Name       string `json:"name"`       // 用户名
-	Phone      string `json:"phone"`      // 手机号
-	Sex        int64  `json:"sex"`        // 性别
-	Ptime      int64  `json:"ptime"`      // 创建时间
-	Utime      int64  `json:"utime"`      // 修改时间
-	Nickname   string `json:"nickname"`   // 昵称
-	Img        string `json:"img"`        // 头像
-	LikeNum    int64  `json:"likeNum"`    // 点赞数
-	ArticleNum int64  `json:"articleNum"` // 发布数
-	Role       string `json:"role"`       // 角色
+	Id       string `json:"id"`       // 用户ID
+	PeerId   string `json:"peerId"`   // 用户Peerid
+	Name     string `json:"name"`     // 用户名
+	Sex      int64  `json:"sex"`      // 性别
+	Nickname string `json:"nickname"` // 昵称
+	Img      string `json:"img"`      // 头像
 }

@@ -46,6 +46,14 @@ func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, e
 		return ret, errors.New("token is not msg.from_id")
 	}
 
+	var user vo.ChatUserInfo
+
+	err = db.DB.QueryRow("SELECT id, IFNULL(peer_id, ''), IFNULL(name, ''), IFNULL(nickname, ''), IFNULL(sex, 0), IFNULL(img, '') FROM sys_user WHERE id = ?", userId).Scan(&user.Id, &user.PeerId, &user.Name, &user.Nickname, &user.Sex, &user.Img)
+	if err != nil {
+		sugar.Log.Error("query user info failed.Err is ", err)
+		return ret, err
+	}
+
 	ret.Id = strconv.FormatInt(utils.SnowId(), 10)
 	ret.ContentType = msg.ContentType
 	ret.Content = msg.Content
@@ -90,6 +98,7 @@ func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, e
 		IsRead:      ret.IsRead,
 		Ptime:       ret.Ptime,
 		Token:       "",
+		User:        user,
 	}
 
 	go func() {
@@ -171,6 +180,8 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 		sugar.Log.Error("marshal send msg failed.", err)
 		return err
 	}
+
+	// sugar.Log.Info("ChatSendMsg: ", string(msgBytes))
 
 	err = ipfsTopic.Publish(context.Background(), msgBytes)
 	if err != nil {
