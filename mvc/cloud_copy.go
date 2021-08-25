@@ -68,7 +68,7 @@ func InsertInto(db *Sql, id, parent_id, userid string) string {
 	//current timestamp.
 	t := time.Now().Unix()
 	//insert  data into the file table.
-	stmt1, err := db.DB.Prepare("INSERT INTO cloud_file (id,user_id,file_name,parent_id,ptime,file_cid,file_size,file_type,is_folder,thumbnail,width,height,duration values(?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	stmt1, err := db.DB.Prepare("INSERT INTO cloud_file (id,user_id,file_name,parent_id,ptime,file_cid,file_size,file_type,is_folder,thumbnail,width,height,duration) values(?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		sugar.Log.Error("Insert into cloud_file table is failed.", err)
 		return ""

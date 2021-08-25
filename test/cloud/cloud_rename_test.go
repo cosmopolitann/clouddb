@@ -12,7 +12,7 @@ func TestRenameFile(t *testing.T) {
 	sugar.Log.Info("~~~~  Connecting to the sqlite3 database. ~~~~")
 	//The path is default.
 	sugar.Log.Info("Start Open Sqlite3 Database.")
-	d, err := sql.Open("sqlite3", "/Users/apple/Desktop/xiaolong.db")
+	d, err := sql.Open("sqlite3", "/Users/apple/Desktop/xiaolong1.db")
 	if err != nil {
 		panic(err)
 	}
@@ -23,10 +23,10 @@ func TestRenameFile(t *testing.T) {
 	ss := Testdb(d)
 	//插入数据
 	value := `{
-"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQxNjIwMzU1NjI5MTM1NDYyNCIsInBlZXJJZCI6IlFtMTIzIiwibmFtZSI6Im5pY2siLCJwaG9uZSI6IjE4MSIsInNleCI6MCwibmlja25hbWUiOiJzZGYiLCJpbWciOiJodHRwIiwicHRpbWUiOjEsInV0aW1lIjoxLCJleHAiOjE2MjY1NTE3ODd9.CELlZoQgrRyElp8NwSt4QGq-XrIB0ZNJJA1LnI85Mgc",
-    "rename":"4.png",
-    "id":"4123",
-"isFolder":0,
+"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQxNDIwNzExNDIxNTQyODA5MCIsInBlZXJJZCI6IiIsIm5hbWUiOiLmtYvor5UiLCJwaG9uZSI6IiIsInNleCI6MCwibmlja25hbWUiOiLmtYvor5UiLCJpbWciOiIiLCJwdGltZSI6MTYyNzQ0NDAwOCwidXRpbWUiOjE2Mjc0NDQwMDgsInJvbGUiOiIxIiwiZXhwIjoxNjMwMDA3NDkzfQ.9tn-hLZtYMAcxeZOEwj2BwfLunSSpw3LIyEIJ65Hanw",
+    "rename":"上海真好",
+    "id":"435120994852540416",
+"isFolder":1,
 "parentId":"0"
 }`
 	//b1, e := json.Marshal(fi)
