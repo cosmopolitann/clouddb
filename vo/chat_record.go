@@ -74,3 +74,25 @@ type ChatRenameRecordParams struct {
 	Name  string `json:"name"`
 	Token string `json:"token"`
 }
+
+type ChatRecored struct {
+	Id      string `json:"id"`
+	Name    string `json:"name"`    //       1 文本  2 表情 3 图片 4 文件
+	FromId  string `json:"fromId"`  //require     创建者
+	LastMsg string `json:"lastMsg"` //require     最后的消息
+	ToId    string `json:"toId"`    //require         0 未撤回  1  撤回
+	Ptime   int64  `json:"ptime"`   // require    时间
+}
+
+type ChatUserIdListParams struct {
+	Token string `json:"token"`
+}
+
+type ChatUserInfo struct {
+	Id       string `json:"id"`       // 用户ID
+	PeerId   string `json:"peerId"`   // 用户Peerid
+	Name     string `json:"name"`     // 用户名
+	Sex      int64  `json:"sex"`      // 性别
+	Nickname string `json:"nickname"` // 昵称
+	Img      string `json:"img"`      // 头像
+}

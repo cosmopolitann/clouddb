@@ -703,6 +703,24 @@ func (db *Sql) ChatListenMsgUpdateUser(ipfsNode *ipfsCore.IpfsNode, token string
 	return err
 }
 
+// ChatUserIdList 获取会话用户ID列表
+func (db *Sql) ChatUserIdList(dInfo string) string {
+
+	data, e := ChatUserIdList(db, dInfo)
+	if e != nil {
+		return vo.ResponseErrorMsg(400, e.Error())
+	}
+	return vo.ResponseSuccess(data)
+}
+
+// ChatUsersUpdate 更新用户信息
+func (db *Sql) ChatUsersUpdate(dInfo string) error {
+
+	err := ChatUsersUpdate(db, dInfo)
+
+	return err
+}
+
 /*
 ------------------------------------------------------
 |                    Chat  End                       |

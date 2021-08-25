@@ -8,7 +8,6 @@ const (
 	MSG_TYPE_HEARTBEAT = "heartbeat"          // 消息：心跳检查
 
 	CHAT_MSG_SWAP_TOPIC = "xiaolong-chat-swap" // 消息接收主题
-	// CHAT_MSG_SWAP_TOPIC = "xlcs" // 消息接收主题
 )
 
 const (
@@ -28,12 +27,13 @@ type ChatPacketParams struct {
 }
 
 type ChatSendMsgParams struct {
-	RecordId    string `json:"recordId"`    //require     coment 消息记录id
-	ContentType int64  `json:"contentType"` //       1 文本  2 表情 3 图片 4 文件
-	Content     string `json:"content"`     // require     coment 消息内容
-	FromId      string `json:"fromId"`      //require     coment 发送方id
-	ToId        string `json:"toId"`        //require     coment 对方id
-	Token       string `json:"token"`       //token
+	RecordId    string       `json:"recordId"`    //require     coment 消息记录id
+	ContentType int64        `json:"contentType"` //       1 文本  2 表情 3 图片 4 文件
+	Content     string       `json:"content"`     // require     coment 消息内容
+	FromId      string       `json:"fromId"`      //require     coment 发送方id
+	ToId        string       `json:"toId"`        //require     coment 对方id
+	Token       string       `json:"token"`       //token
+	Peer        ChatUserInfo `json:"peer"`        // peer
 }
 
 type ChatReadMsgParams struct {
@@ -42,16 +42,17 @@ type ChatReadMsgParams struct {
 }
 
 type ChatSwapMsgParams struct {
-	Id          string `json:"id"`
-	RecordId    string `json:"recordId"`    //require     coment 消息记录id
-	ContentType int64  `json:"contentType"` //       1 文本  2 表情 3 图片 4 文件
-	Content     string `json:"content"`     // require     coment 消息内容
-	FromId      string `json:"fromId"`      //require     coment 发送方id
-	ToId        string `json:"toId"`        //require     coment 对方id
-	IsWithdraw  int64  `json:"isWithDraw"`  //require     coment 是否撤回         0 未撤回  1  撤回
-	IsRead      int64  `json:"isRead"`      // require     coment 是否已读
-	Ptime       int64  `json:"ptime"`
-	Token       string `json:"token"` //token
+	Id          string       `json:"id"`
+	RecordId    string       `json:"recordId"`    //require     coment 消息记录id
+	ContentType int64        `json:"contentType"` //       1 文本  2 表情 3 图片 4 文件
+	Content     string       `json:"content"`     // require     coment 消息内容
+	FromId      string       `json:"fromId"`      //require     coment 发送方id
+	ToId        string       `json:"toId"`        //require     coment 对方id
+	IsWithdraw  int64        `json:"isWithDraw"`  //require     coment 是否撤回         0 未撤回  1  撤回
+	IsRead      int64        `json:"isRead"`      // require     coment 是否已读
+	Ptime       int64        `json:"ptime"`
+	Token       string       `json:"token"` //token
+	User        ChatUserInfo `json:"user"`
 }
 
 type ChatAddRecordParams struct {

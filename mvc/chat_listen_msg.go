@@ -95,6 +95,8 @@ func ChatListenMsgBlocked(ipfsNode *ipfsCore.IpfsNode, db *Sql, token string, cl
 			continue
 		}
 
+		// sugar.Log.Infof("Data ==== %+v", data)
+
 		if data == nil {
 			sugar.Log.Error("*pubsub.Message is nil, i will return")
 			return fmt.Errorf("sub2 is nil")
@@ -483,7 +485,7 @@ func handleAddRecordMsg(db *Sql, msg vo.ChatSwapRecordParams) (vo.ChatRecordInfo
 		}
 
 		// 查询对方信息
-		err = db.DB.QueryRow("SELECT peer_id, name, phone, sex, nickname, img FROM sys_user WHERE id = ?", msg.FromId).Scan(&ret.PeerId, &ret.UserName, &ret.Phone, &ret.Sex, &ret.NickName, &ret.Img)
+		err = db.DB.QueryRow("SELECT IFNULL(peer_id, ''), IFNULL(name, ''), IFNULL(phone, ''), IFNULL(sex, 0), IFNULL(nickname, ''), IFNULL(img, '') FROM sys_user WHERE id = ?", msg.FromId).Scan(&ret.PeerId, &ret.UserName, &ret.Phone, &ret.Sex, &ret.NickName, &ret.Img)
 		if err != nil {
 			if err == bsql.ErrNoRows {
 				sugar.Log.Warn("not found peer info, so set empty")
@@ -620,6 +622,7 @@ func handleNewMsg(db *Sql, msg vo.ChatSwapMsgParams) (ChatMsg, error) {
 	err = db.DB.QueryRow("SELECT id, content_type, content, from_id, to_id, ptime, is_with_draw, is_read, record_id FROM chat_msg WHERE id = ?", ret.Id).Scan(&ret.Id, &ret.ContentType, &ret.Content, &ret.FromId, &ret.ToId, &ret.Ptime, &ret.IsWithdraw, &ret.IsRead, &ret.RecordId)
 	switch err {
 	case bsql.ErrNoRows:
+		// 新增消息
 		res, err := db.DB.Exec("INSERT INTO chat_msg (id, content_type, content, from_id, to_id, ptime, is_with_draw, is_read, record_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 			ret.Id, ret.ContentType, ret.Content, ret.FromId, ret.ToId, ret.Ptime, ret.IsWithdraw, ret.IsRead, ret.RecordId)
 		if err != nil {
@@ -630,9 +633,21 @@ func handleNewMsg(db *Sql, msg vo.ChatSwapMsgParams) (ChatMsg, error) {
 			return ret, err
 		}
 
+		// 更新 chat_record last_msg
 		_, err = db.DB.Exec("UPDATE chat_record SET last_msg = ?, ptime = ? WHERE id = ?", ret.Content, ret.Ptime, ret.RecordId)
 		if err != nil {
 			return ret, err
+		}
+
+		user := msg.User
+
+		// 更新用户信息
+		if user.Id != "" {
+			_, err = db.DB.Exec("INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, nickname, img) VALUES (?, ?, ?, ?, ?, ?, ?)",
+				user.Id, user.PeerId, user.Name, "", user.Sex, user.Nickname, user.Img)
+			if err != nil {
+				return ret, err
+			}
 		}
 
 		return ret, nil

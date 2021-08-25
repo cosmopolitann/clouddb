@@ -2,6 +2,7 @@ package mvc
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -44,6 +45,32 @@ func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, e
 	if userId != msg.FromId {
 		sugar.Log.Error("token is not msg.from_id")
 		return ret, errors.New("token is not msg.from_id")
+	}
+
+	peer := msg.Peer
+	if peer.Id != "" {
+		var peerId string
+		err = db.DB.QueryRow("SELECT id FROM sys_user WHERE id = ?", peer.Id).Scan(&peerId)
+		if err != nil && err != sql.ErrNoRows {
+			sugar.Log.Error("query user info failed.Err is ", err)
+			return ret, err
+		}
+
+		if peerId == "" {
+			_, err = db.DB.Exec("INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, nickname, img) VALUES (?, ?, ?, ?, ?, ?, ?)",
+				peer.Id, peer.PeerId, peer.Name, "", peer.Sex, peer.Nickname, peer.Img)
+			if err != nil {
+				return ret, err
+			}
+		}
+	}
+
+	var user vo.ChatUserInfo
+
+	err = db.DB.QueryRow("SELECT id, IFNULL(peer_id, ''), IFNULL(name, ''), IFNULL(nickname, ''), IFNULL(sex, 0), IFNULL(img, '') FROM sys_user WHERE id = ?", userId).Scan(&user.Id, &user.PeerId, &user.Name, &user.Nickname, &user.Sex, &user.Img)
+	if err != nil {
+		sugar.Log.Error("query user info failed.Err is ", err)
+		return ret, err
 	}
 
 	ret.Id = strconv.FormatInt(utils.SnowId(), 10)
@@ -90,6 +117,7 @@ func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, e
 		IsRead:      ret.IsRead,
 		Ptime:       ret.Ptime,
 		Token:       "",
+		User:        user,
 	}
 
 	go func() {
@@ -172,6 +200,8 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 		return err
 	}
 
+	// sugar.Log.Info("ChatSendMsg: ", string(msgBytes))
+
 	err = ipfsTopic.Publish(context.Background(), msgBytes)
 	if err != nil {
 		sugar.Log.Error("ChatSendMsg failed.", err)
@@ -179,68 +209,6 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 	}
 
 	sugar.Log.Debugf("ChatSendMsg topic: %s, data: %v", msgTopicKey, msgPacket)
-
-	return nil
-}
-
-func publishUserInfo(ipfsNode *ipfsCore.IpfsNode, db *Sql, userId string) error {
-	var err error
-	topic := "/db-online-sync"
-	// publish msg
-	sugar.Log.Info("Publish Topic: ", "/db-online-sync")
-	ctx := context.Background()
-	tp, ok := TopicJoin.Load(topic)
-	if !ok {
-		tp, err = ipfsNode.PubSub.Join(topic)
-		if err != nil {
-			sugar.Log.Error("PubSub.Join .Err is", err)
-			return err
-		}
-		TopicJoin.Store(topic, tp)
-	}
-
-	var dl vo.RespSysUser
-	rows, err := db.DB.Query("select id,IFNULL(peer_id,'null'),IFNULL(name,'null'),IFNULL(phone,'null'),IFNULL(sex,0),IFNULL(ptime,0),IFNULL(utime,0),IFNULL(nickname,'null'),IFNULL(img,'null'),IFNULL(role,'2') from sys_user where id=?", userId)
-	if err != nil {
-		sugar.Log.Error("AddUser Query data is failed.Err is ", err)
-		return err
-	}
-	// 释放锁
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&dl.Id, &dl.PeerId, &dl.Name, &dl.Phone, &dl.Sex, &dl.Ptime, &dl.Utime, &dl.NickName, &dl.Img, &dl.Role)
-		if err != nil {
-			sugar.Log.Error("AddUser Query scan data is failed.The err is ", err)
-			return err
-		}
-		sugar.Log.Info(" AddUser Query a entire data is ", dl)
-	}
-	//the first step.
-	var s3 UserAd
-	s3.Type = "receiveUserRegister"
-	s3.Data = dl
-	s3.FromId = ipfsNode.Identity.String()
-	//marshal UserAd.
-	//the second step
-	sugar.Log.Info("--- second step ---")
-
-	jsonBytes, err := json.Marshal(s3)
-	if err != nil {
-		sugar.Log.Error("Publish msg is failed.Err:", err)
-		return err
-	}
-	sugar.Log.Info("Frwarding information:=", string(jsonBytes))
-	sugar.Log.Info("Local PeerId :=", ipfsNode.Identity.String())
-	//the  third  step .
-	sugar.Log.Info("--- third step ---")
-
-	// fmt.Printf("DD: %s", string(jsonBytes))
-
-	err = tp.Publish(ctx, jsonBytes)
-	if err != nil {
-		sugar.Log.Error("Publish Err:", err)
-		return err
-	}
 
 	return nil
 }

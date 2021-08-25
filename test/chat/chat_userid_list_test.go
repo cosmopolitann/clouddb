@@ -12,7 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func TestChatRecordList(t *testing.T) {
+func TestChatUserIdList(t *testing.T) {
 	sugar.InitLogger()
 	sugar.Log.Info("~~~~  Connecting to the sqlite3 database. ~~~~")
 	//The path is default.
@@ -29,16 +29,13 @@ func TestChatRecordList(t *testing.T) {
 
 	token, _ := jwt.GenerateToken("416203557629337600", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
 
-	req := vo.ChatRecordListParams{
-		FromId:     "416203557629337600",
-		Token:      token,
-		CustomerId: "416418921625690112",
-		Keyword:    "",
+	req := vo.ChatUserIdListParams{
+		Token: token,
 	}
 
 	value, _ := json.Marshal(req)
 
-	resp := ss.ChatRecordList(string(value))
+	resp := ss.ChatUserIdList(string(value))
 	fmt.Println("获取返回的数据 :=  ", resp)
 
 }

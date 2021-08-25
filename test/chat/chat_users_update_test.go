@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cosmopolitann/clouddb/jwt"
 	"github.com/cosmopolitann/clouddb/sugar"
 	"github.com/cosmopolitann/clouddb/vo"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func TestChatRecordList(t *testing.T) {
+func TestChatUsersUpdate(t *testing.T) {
 	sugar.InitLogger()
 	sugar.Log.Info("~~~~  Connecting to the sqlite3 database. ~~~~")
 	//The path is default.
@@ -27,18 +26,30 @@ func TestChatRecordList(t *testing.T) {
 	fmt.Println(" Ping is failed,err:=", e)
 	ss := Testdb(d)
 
-	token, _ := jwt.GenerateToken("416203557629337600", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
+	// token, _ := jwt.GenerateToken("416203557629337600", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
 
-	req := vo.ChatRecordListParams{
-		FromId:     "416203557629337600",
-		Token:      token,
-		CustomerId: "416418921625690112",
-		Keyword:    "",
+	req := []vo.ChatUserInfo{
+		{
+			Id:       "123",
+			PeerId:   "peerid",
+			Name:     "name",
+			Sex:      1,
+			Nickname: "nickname",
+			Img:      "imge",
+		},
+		{
+			Id:       "12345",
+			PeerId:   "peerid222",
+			Name:     "name222",
+			Sex:      1,
+			Nickname: "nickname22",
+			Img:      "imge22",
+		},
 	}
 
 	value, _ := json.Marshal(req)
 
-	resp := ss.ChatRecordList(string(value))
+	resp := ss.ChatUsersUpdate(string(value))
 	fmt.Println("获取返回的数据 :=  ", resp)
 
 }
