@@ -17,7 +17,9 @@ import (
 func DownLoadFile(db *Sql, value string) (e error) {
 	sugar.Log.Info(" ~~~~  Start   DownLoadFile ~~~~~ ")
 	var d vo.TransferAdd
+	time.Sleep(100 * time.Millisecond)
 	id := utils.SnowId()
+
 	err := json.Unmarshal([]byte(value), &d)
 	if err != nil {
 		sugar.Log.Error("Marshal params is failed.Err:", err)
