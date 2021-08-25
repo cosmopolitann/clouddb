@@ -60,7 +60,7 @@ func AddFolder(db *Sql, value string) error {
 	//	}
 
 	sugar.Log.Info("-- 查找是否有 相同名字的文件夹 ---")
-	c, _ := FindOneDirIsExist(db, f)
+	c, _ := FindOneDirIsExist(db, f, userId)
 	sugar.Log.Info("--  c == ---", c)
 
 	if c == 0 {
@@ -162,10 +162,10 @@ func IsEmptyRename(rename string) bool {
 	return false
 }
 
-func FindOneDirIsExist(mvc *Sql, d vo.CloudAddFolderParams) (int64, error) {
+func FindOneDirIsExist(mvc *Sql, d vo.CloudAddFolderParams, userId string) (int64, error) {
 	//查询数据
 	var f File
-	rows, _ := mvc.DB.Query("SELECT id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null') FROM cloud_file where file_name=? and parent_id=? and is_folder=?", d.FileName, d.ParentId, 1)
+	rows, _ := mvc.DB.Query("SELECT id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null') FROM cloud_file where file_name=? and parent_id=? and is_folder=? and user_id=?", d.FileName, d.ParentId, 1, userId)
 
 	// 释放锁
 	defer rows.Close()
