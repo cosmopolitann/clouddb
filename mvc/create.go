@@ -658,9 +658,9 @@ func (db *Sql) ChatCreateRecord(ipfsNode *ipfsCore.IpfsNode, msg string) string 
 // }
 
 // ChatSendMsg  发送消息
-func (db *Sql) ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, msg string) string {
+func (db *Sql) ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, msg string, handler vo.ChatFailMessageHandler) string {
 
-	data, err := ChatSendMsg(ipfsNode, db, msg)
+	data, err := ChatSendMsg(ipfsNode, db, msg, handler)
 	if err != nil {
 		return vo.ResponseErrorMsg(400, err.Error())
 	}
@@ -717,6 +717,14 @@ func (db *Sql) ChatUserIdList(dInfo string) string {
 func (db *Sql) ChatUsersUpdate(dInfo string) error {
 
 	err := ChatUsersUpdate(db, dInfo)
+
+	return err
+}
+
+// ChatSaveOfflineMsgs  更新离线消息
+func (db *Sql) ChatSaveOfflineMsgs(value string) error {
+
+	err := ChatSaveOfflineMsgs(db, value)
 
 	return err
 }

@@ -17,7 +17,7 @@ import (
 	ipfsCore "github.com/ipfs/go-ipfs/core"
 )
 
-func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, error) {
+func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.ChatFailMessageHandler) (ChatMsg, error) {
 
 	// 接收参数
 	var msg vo.ChatSendMsgParams
@@ -161,6 +161,10 @@ func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, e
 				sugar.Log.Error("update chat_msg send_state fail", err)
 			}
 
+			// handle offline message
+			offmsg, _ := json.Marshal(ret)
+			omh.HandlerOfflineMessage(string(offmsg))
+
 			sugar.Log.Warn("chat send msg failed")
 		} else {
 			sugar.Log.Warn("chat send msg success")
@@ -200,8 +204,6 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 		return err
 	}
 
-	// sugar.Log.Info("ChatSendMsg: ", string(msgBytes))
-
 	err = ipfsTopic.Publish(context.Background(), msgBytes)
 	if err != nil {
 		sugar.Log.Error("ChatSendMsg failed.", err)
@@ -215,6 +217,6 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 
 // 获取广播topic
 func getRecvTopic(toUserId string) string {
-	return vo.CHAT_MSG_SWAP_TOPIC + toUserId
-	// return vo.CHAT_MSG_SWAP_TOPIC
+	// return vo.CHAT_MSG_SWAP_TOPIC + toUserId
+	return vo.CHAT_MSG_SWAP_TOPIC
 }
