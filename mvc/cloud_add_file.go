@@ -34,7 +34,7 @@ func AddFile(db *Sql, value string) (string, error) {
 	id := utils.SnowId()
 	t := time.Now().Unix()
 	//查询 是否 有相同名字的 文件 //
-	c, err, snowid := FindFileSameName(db, f)
+	c, err, snowid := FindFileSameName(db, f, userId.(string))
 	if err != nil {
 		return "", err
 
@@ -103,10 +103,10 @@ func FindOneFileIsExist(db *Sql, ff map[string]interface{}, f File) (int64, erro
 	return 0, nil
 }
 
-func FindFileSameName(db *Sql, p vo.CloudAddFileParams) (int64, error, string) {
+func FindFileSameName(db *Sql, p vo.CloudAddFileParams, userId string) (int64, error, string) {
 	//查询数据
 	f := File{}
-	rows, _ := db.DB.Query("SELECT id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null') FROM cloud_file where file_name=? and parent_id=?", p.FileName, p.ParentId)
+	rows, _ := db.DB.Query("SELECT id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null') FROM cloud_file where file_name=? and parent_id=? and user_id=?", p.FileName, p.ParentId, userId)
 
 	// 释放锁
 	defer rows.Close()
