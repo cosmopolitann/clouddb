@@ -18,6 +18,14 @@ import (
 )
 
 func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.ChatFailMessageHandler) (ChatMsg, error) {
+	return doChatSendMsg(ipfsNode, db, value, omh)
+}
+
+func ChatSendMsg2(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, error) {
+	return doChatSendMsg(ipfsNode, db, value, FailMsgHandler)
+}
+
+func doChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.ChatFailMessageHandler) (ChatMsg, error) {
 
 	// 接收参数
 	var msg vo.ChatSendMsgParams

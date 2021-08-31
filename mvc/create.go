@@ -657,10 +657,25 @@ func (db *Sql) ChatCreateRecord(ipfsNode *ipfsCore.IpfsNode, msg string) string 
 // 	return vo.ResponseSuccess()
 // }
 
+// ChatFailMsgHandler  设置失败消息回调
+func (db *Sql) ChatFailMsgHandler(handler vo.ChatFailMessageHandler) error {
+	return ChatFailMsgHandler(handler)
+}
+
 // ChatSendMsg  发送消息
 func (db *Sql) ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, msg string, handler vo.ChatFailMessageHandler) string {
 
 	data, err := ChatSendMsg(ipfsNode, db, msg, handler)
+	if err != nil {
+		return vo.ResponseErrorMsg(400, err.Error())
+	}
+	return vo.ResponseSuccess(data)
+}
+
+// ChatSendMsg1  发送消息，失败回调
+func (db *Sql) ChatSendMsg2(ipfsNode *ipfsCore.IpfsNode, msg string) string {
+
+	data, err := ChatSendMsg2(ipfsNode, db, msg)
 	if err != nil {
 		return vo.ResponseErrorMsg(400, err.Error())
 	}

@@ -1,7 +1,6 @@
 package chat
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -11,7 +10,6 @@ import (
 	"github.com/cosmopolitann/clouddb/sugar"
 	"github.com/cosmopolitann/clouddb/test/myipfs"
 	"github.com/cosmopolitann/clouddb/vo"
-	"github.com/libp2p/go-libp2p-core/peer"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -59,15 +57,15 @@ func TestChatSendMsg(t *testing.T) {
 		panic(err)
 	}
 
-	// h2ID, _ := peer.Decode("12D3KooWS8qWyGimuUgDjakUFGJkDgvGYcMEjnj5xqojeDwf1rZm")
-	h2ID, _ := peer.Decode("12D3KooWMUCCUigkLYryEJpGC1DdnJV87x8GozccreW2SVgK7KXW")
+	// // h2ID, _ := peer.Decode("12D3KooWS8qWyGimuUgDjakUFGJkDgvGYcMEjnj5xqojeDwf1rZm")
+	// h2ID, _ := peer.Decode("12D3KooWMUCCUigkLYryEJpGC1DdnJV87x8GozccreW2SVgK7KXW")
 
-	addr, err := node.DHT.FindPeer(context.Background(), h2ID)
-	if err != nil {
-		fmt.Println("find peer err:", err)
-	}
+	// addr, err := node.DHT.FindPeer(context.Background(), h2ID)
+	// if err != nil {
+	// 	fmt.Println("find peer err:", err)
+	// }
 
-	fmt.Println("addr:", addr)
+	// fmt.Println("addr:", addr)
 
 	var cl ChatFailMessageHandler
 
