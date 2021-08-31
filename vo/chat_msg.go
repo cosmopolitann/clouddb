@@ -99,3 +99,31 @@ type ChatSwapAckParams struct {
 	FromId string `json:"fromId"` // 发送者
 	ToId   string `json:"toId"`   // 接收者
 }
+
+type UserBaseInfo struct {
+	Id       string `json:"id"`       //id
+	PeerId   string `json:"peerId"`   //peerId
+	Name     string `json:"name"`     //名字
+	Phone    string `json:"phone"`    //手机号
+	Sex      int64  `json:"sex"`      //性别 0 未知 1 男 2 女
+	Ptime    int64  `json:"ptime"`    //时间
+	Nickname string `json:"nickname"` //昵称
+	Img      string `json:"img"`      //图片
+}
+
+type OfflineMessage struct {
+	Id          string `json:"id"`          //id
+	RecordId    string `json:"recordId"`    //record_id
+	FromId      string `json:"fromId"`      //from用户id
+	ToId        string `json:"toId"`        //to用户id
+	ContentType int64  `json:"contentType"` //附件类型
+	Content     string `json:"content"`     //附件
+	IsWithdraw  int64  `json:"isWithdraw"`  //是否撤回
+	Ptime       int64  `json:"ptime"`       //时间
+	IsRead      int64  `json:"isRead"`
+}
+
+type OfflineMessageV2 struct {
+	User     UserBaseInfo     `json:"user"`     // 消息发送人
+	Messages []OfflineMessage `json:"messages"` // 离线消息列表
+}
