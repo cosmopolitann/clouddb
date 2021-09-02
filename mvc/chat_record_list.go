@@ -79,7 +79,6 @@ func ChatRecordList(db *Sql, value string) ([]vo.ChatRecordRespListParams, error
 	}
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		var ri vo.ChatRecordRespListParams
 		err := rows.Scan(&ri.Id, &ri.FromId, &ri.ToId, &ri.Ptime, &ri.LastMsg)

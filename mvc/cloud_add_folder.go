@@ -169,7 +169,6 @@ func FindOneDirIsExist(mvc *Sql, d vo.CloudAddFolderParams, userId string) (int6
 
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		err := rows.Scan(&f.Id, &f.UserId, &f.FileName, &f.ParentId, &f.Ptime, &f.FileCid, &f.FileSize, &f.FileType, &f.IsFolder, &f.Thumbnail)
 		if err != nil {

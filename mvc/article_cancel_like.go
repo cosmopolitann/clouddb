@@ -70,6 +70,7 @@ func ArticleCancelLike(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (Arti
 		sugar.Log.Error("Query article_like is failed.Err is ", err)
 		return dl, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&dl.Id, &dl.UserId, &dl.ArticleId, &dl.IsLike)
 		if err != nil {
@@ -77,7 +78,6 @@ func ArticleCancelLike(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (Arti
 			return dl, err
 		}
 	}
-	defer rows.Close()
 
 	sugar.Log.Info("--- 开始 发布的消息 ---")
 

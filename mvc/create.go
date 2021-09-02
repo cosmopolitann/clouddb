@@ -744,6 +744,14 @@ func (db *Sql) ChatSaveOfflineMsgs(value string) error {
 	return err
 }
 
+// ChatSaveOfflineMsgs  更新离线消息
+func (db *Sql) ChatSaveOfflineMsgsV2(value string) error {
+
+	err := ChatSaveOfflineMsgsV2(db, value)
+
+	return err
+}
+
 /*
 ------------------------------------------------------
 |                    Chat  End                       |

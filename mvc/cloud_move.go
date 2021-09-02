@@ -46,6 +46,9 @@ func MoveFile(db *Sql, value string) error {
 
 			if err != nil {
 				fmt.Println("query err is ", err)
+
+				// 释放锁
+				rows.Close()
 				return err
 			}
 		}

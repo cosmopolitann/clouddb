@@ -43,7 +43,6 @@ func ChatMsgList(db *Sql, value string) ([]ChatMsg, error) {
 
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		var dl ChatMsg
 		err = rows.Scan(&dl.Id, &dl.ContentType, &dl.Content, &dl.FromId, &dl.ToId, &dl.Ptime, &dl.IsWithdraw, &dl.IsRead, &dl.RecordId, &dl.SendState, &dl.SendFail)
