@@ -45,6 +45,7 @@ func ArticleRecommend(db *Sql, value string) ([]ArticleAboutMeResp, error) {
 	}
 	var c int
 
+	defer rows1.Close()
 	for rows1.Next() {
 		err = rows1.Scan(&c)
 		if err != nil {
@@ -52,7 +53,6 @@ func ArticleRecommend(db *Sql, value string) ([]ArticleAboutMeResp, error) {
 			return art, err
 		}
 	}
-	defer rows1.Close()
 	sugar.Log.Info("----总数c: :=", c)
 
 	rand.Seed(time.Now().UnixNano())
@@ -109,7 +109,6 @@ func ArticleRecommendLimitTenData(db *Sql, value string) ([]ArticleAboutMeResp, 
 	}
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		var dl ArticleAboutMeResp
 		//scan data =>  ArticleAboutMeResp.

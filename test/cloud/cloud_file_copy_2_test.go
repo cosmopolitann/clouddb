@@ -20,7 +20,7 @@ func TestCopy2(t *testing.T) {
 	}
 
 	//插入数据
-	
+
 	MM = [][]string{}
 	// if dl.IsFolder == 1 {
 	// 	copy(d, dl.Id, "409330202166956032")
@@ -52,6 +52,7 @@ func cc(d *sql.DB, user_id, id string) {
 		sugar.Log.Error("Query data is failed.Err is ", err)
 
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var dl File1
 		err = rows.Scan(&dl.Id, &dl.UserId, &dl.FileName, &dl.ParentId, &dl.Ptime, &dl.FileCid, &dl.FileSize, &dl.FileType, &dl.IsFolder, &dl.Thumbnail)
@@ -79,6 +80,7 @@ func cc(d *sql.DB, user_id, id string) {
 				sugar.Log.Error("Query scan data is failed.The err is ", err)
 			}
 		}
+		rows.Close()
 		if dl.IsFolder == 1 {
 			M = []string{}
 			cc(d, user_id, dl.Id)
@@ -109,6 +111,8 @@ func copy(db *sql.DB, parent_id string, userId string) {
 
 		var f1 []File1
 		rows, _ := db.Query("SELECT id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'mk') FROM cloud_file where parent_id=? and user_id=?", parent_id, userId)
+
+		defer rows.Close()
 		for rows.Next() {
 			err := rows.Scan(&f.Id, &f.UserId, &f.FileName, &f.ParentId, &f.Ptime, &f.FileCid, &f.FileSize, &f.FileType, &f.IsFolder, &f.Thumbnail)
 			if err != nil {

@@ -256,6 +256,8 @@ func Verify(db *Sql, value string) error {
 			err := rows.Scan(&s.Id, &s.UserId, &s.FileName, &s.ParentId, &s.Ptime, &s.FileCid, &s.FileSize, &s.FileType, &s.IsFolder, &s.Thumbnail)
 			if err != nil {
 				sugar.Log.Error("Scan is failed.", err)
+				// 释放锁
+				rows.Close()
 				return err
 			}
 		}

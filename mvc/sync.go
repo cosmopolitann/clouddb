@@ -1480,7 +1480,7 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 			sugar.Log.Error("Query chat_record data is failed.Err is ", err)
 		}
 		// 释放锁
-		rows.Close()
+		defer rows.Close()
 		for rows.Next() {
 			var ri ChatRecord
 			err := rows.Scan(&ri.Id, &ri.Name, &ri.FromId, &ri.Toid, &ri.Ptime, &ri.LastMsg)

@@ -90,7 +90,6 @@ func FindOneFileIsExist(db *Sql, ff map[string]interface{}, f File) (int64, erro
 
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		err := rows.Scan(&f.Id, &f.UserId, &f.FileName, &f.ParentId, &f.Ptime, &f.FileCid, &f.FileSize, &f.FileType, &f.IsFolder, &f.Thumbnail)
 		if err != nil {
@@ -110,7 +109,6 @@ func FindFileSameName(db *Sql, p vo.CloudAddFileParams, userId string) (int64, e
 
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		err := rows.Scan(&f.Id, &f.UserId, &f.FileName, &f.ParentId, &f.Ptime, &f.FileCid, &f.FileSize, &f.FileType, &f.IsFolder, &f.Thumbnail)
 		if err != nil {

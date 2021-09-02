@@ -72,6 +72,8 @@ func Delete(db *Sql, value string) error {
 			err = rows.Scan(&dl.Id, &dl.UserId, &dl.FileName, &dl.ParentId, &dl.Ptime, &dl.FileCid, &dl.FileSize, &dl.FileType, &dl.IsFolder)
 			if err != nil {
 				sugar.Log.Error("Query scan data is failed.The err is ", err)
+				// 释放锁
+				rows.Close()
 				return err
 			}
 		}

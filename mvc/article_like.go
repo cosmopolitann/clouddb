@@ -41,7 +41,6 @@ func AddArticleLike(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) error {
 	}
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		err = rows.Scan(&dl.Id, &dl.UserId, &dl.ArticleId, &dl.IsLike)
 		if err != nil {
