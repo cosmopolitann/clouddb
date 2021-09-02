@@ -1411,7 +1411,7 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 			}
 			sugar.Log.Info("Query a entire data is ", dl)
 			//write to file.
-			sql := fmt.Sprintf("INSERT OR REPLACE INTO cloud_file (id,user_id,file_name,parent_id,ptime,file_cid,file_size,file_type,is_folder,thumbnail) values('%s','%s','%s','%s',%d,'%s',%d,%d,%d,'%s')\n", dl.Id, dl.UserId, dl.FileName, dl.ParentId, dl.Ptime, dl.FileCid, dl.FileSize, dl.FileType, dl.IsFolder, dl.Thumbnail)
+			sql := fmt.Sprintf("INSERT OR REPLACE INTO cloud_file (id,user_id,file_name,parent_id,ptime,file_cid,file_size,file_type,is_folder,thumbnail,width,height,duration) values('%s','%s','%s','%s',%d,'%s',%d,%d,%d,'%s','%s','%s',%d)\n", dl.Id, dl.UserId, dl.FileName, dl.ParentId, dl.Ptime, dl.FileCid, dl.FileSize, dl.FileType, dl.IsFolder, dl.Thumbnail, dl.Width, dl.Height, dl.Duration)
 			_, err = f1.WriteString(sql)
 			if err != nil {
 				sugar.Log.Error(" Write update file is failed.Err: ", err)
@@ -1448,81 +1448,81 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 
 	}()
 	//query chat_msg table.
-	go func() {
-		rows, err := db.DB.Query("SELECT * FROM chat_msg")
-		if err != nil {
-			sugar.Log.Error("Query data is failed.Err is ", err)
-		}
-		// 释放锁
-		defer rows.Close()
-		for rows.Next() {
-			var dl ChatMsg
-			err = rows.Scan(&dl.Id, &dl.ContentType, &dl.Content, &dl.FromId, &dl.ToId, &dl.Ptime, &dl.IsWithdraw, &dl.IsRead, &dl.RecordId)
-			if err != nil {
-				sugar.Log.Error("Query scan data is failed.The err is ", err)
-			}
-			sugar.Log.Info("Query a entire data is ", dl)
-			sql := fmt.Sprintf("INSERT OR REPLACE INTO chat_msg (id, content_type, content, from_id, to_id, ptime, is_with_draw, is_read, record_id) VALUES ('%s', %d, '%s', '%s', '%s', %d, %d,%d, '%s')\n", dl.Id, dl.ContentType, dl.Content, dl.FromId, dl.ToId, dl.Ptime, dl.IsWithdraw, dl.IsRead, dl.RecordId)
+	// go func() {
+	// 	rows, err := db.DB.Query("SELECT * FROM chat_msg")
+	// 	if err != nil {
+	// 		sugar.Log.Error("Query data is failed.Err is ", err)
+	// 	}
+	// 	// 释放锁
+	// 	defer rows.Close()
+	// 	for rows.Next() {
+	// 		var dl ChatMsg
+	// 		err = rows.Scan(&dl.Id, &dl.ContentType, &dl.Content, &dl.FromId, &dl.ToId, &dl.Ptime, &dl.IsWithdraw, &dl.IsRead, &dl.RecordId)
+	// 		if err != nil {
+	// 			sugar.Log.Error("Query scan data is failed.The err is ", err)
+	// 		}
+	// 		sugar.Log.Info("Query a entire data is ", dl)
+	// 		sql := fmt.Sprintf("INSERT OR REPLACE INTO chat_msg (id, content_type, content, from_id, to_id, ptime, is_with_draw, is_read, record_id) VALUES ('%s', %d, '%s', '%s', '%s', %d, %d,%d, '%s')\n", dl.Id, dl.ContentType, dl.Content, dl.FromId, dl.ToId, dl.Ptime, dl.IsWithdraw, dl.IsRead, dl.RecordId)
 
-			//write to file.
-			_, err = f1.WriteString(sql)
-			if err != nil {
-				sugar.Log.Error(" Write update file is failed.Err: ", err)
-			}
-		}
-		wg.Done()
+	// 		//write to file.
+	// 		_, err = f1.WriteString(sql)
+	// 		if err != nil {
+	// 			sugar.Log.Error(" Write update file is failed.Err: ", err)
+	// 		}
+	// 	}
+	// 	wg.Done()
 
-	}()
+	// }()
 	//query chat_record table.
-	go func() {
-		rows, err := db.DB.Query("SELECT id, name,from_id, to_id, ptime, last_msg FROM chat_record")
-		if err != nil {
-			sugar.Log.Error("Query chat_record data is failed.Err is ", err)
-		}
-		// 释放锁
-		rows.Close()
-		for rows.Next() {
-			var ri ChatRecord
-			err := rows.Scan(&ri.Id, &ri.Name, &ri.FromId, &ri.Toid, &ri.Ptime, &ri.LastMsg)
-			if err != nil {
-				sugar.Log.Error("Query chat_record data is failed.Err is ", err)
-			}
-			//
-			sql := fmt.Sprintf("INSERT OR REPLACE INTO chat_record (id, name, from_id, to_id, ptime, last_msg) VALUES ('%s', '%s', '%s', '%s',%d,'%s')\n", ri.Id, ri.Name, ri.FromId, ri.Toid, ri.Ptime, ri.LastMsg)
-			_, err = f1.WriteString(sql)
-			if err != nil {
-				sugar.Log.Error(" Write update file is failed.Err: ", err)
-			}
-		}
-		wg.Done()
+	// go func() {
+	// 	rows, err := db.DB.Query("SELECT id, name,from_id, to_id, ptime, last_msg FROM chat_record")
+	// 	if err != nil {
+	// 		sugar.Log.Error("Query chat_record data is failed.Err is ", err)
+	// 	}
+	// 	// 释放锁
+	// 	rows.Close()
+	// 	for rows.Next() {
+	// 		var ri ChatRecord
+	// 		err := rows.Scan(&ri.Id, &ri.Name, &ri.FromId, &ri.Toid, &ri.Ptime, &ri.LastMsg)
+	// 		if err != nil {
+	// 			sugar.Log.Error("Query chat_record data is failed.Err is ", err)
+	// 		}
+	// 		//
+	// 		sql := fmt.Sprintf("INSERT OR REPLACE INTO chat_record (id, name, from_id, to_id, ptime, last_msg) VALUES ('%s', '%s', '%s', '%s',%d,'%s')\n", ri.Id, ri.Name, ri.FromId, ri.Toid, ri.Ptime, ri.LastMsg)
+	// 		_, err = f1.WriteString(sql)
+	// 		if err != nil {
+	// 			sugar.Log.Error(" Write update file is failed.Err: ", err)
+	// 		}
+	// 	}
+	// 	wg.Done()
 
-	}()
-	// query sys_user table.
-	go func() {
-		rows, err := db.DB.Query("select id,IFNULL(peer_id,'null'),IFNULL(name,'null'),IFNULL(phone,'null'),IFNULL(sex,0),IFNULL(ptime,0),IFNULL(utime,0),IFNULL(nickname,'null'),IFNULL(img,'null') from sys_user")
-		if err != nil {
-			sugar.Log.Error("Query data is failed.Err is ", err)
-		}
-		// 释放锁
-		defer rows.Close()
-		var user SysUser
+	// }()
+	// // query sys_user table.
+	// go func() {
+	// 	rows, err := db.DB.Query("select id,IFNULL(peer_id,'null'),IFNULL(name,'null'),IFNULL(phone,'null'),IFNULL(sex,0),IFNULL(ptime,0),IFNULL(utime,0),IFNULL(nickname,'null'),IFNULL(img,'null') from sys_user")
+	// 	if err != nil {
+	// 		sugar.Log.Error("Query data is failed.Err is ", err)
+	// 	}
+	// 	// 释放锁
+	// 	defer rows.Close()
+	// 	var user SysUser
 
-		for rows.Next() {
-			err = rows.Scan(&user.Id, &user.PeerId, &user.Name, &user.Phone, &user.Sex, &user.Ptime, &user.Utime, &user.NickName, &user.Img)
-			if err != nil {
-				sugar.Log.Error("Query scan data is failed.The err is ", err)
-			}
-			sugar.Log.Info("Query a entire data is ", user)
-		}
-		//
-		sql := fmt.Sprintf("INSERT OR REPLACE INTO sys_user (id, peer_id, name, phone, sex, ptime,utime,nickname) VALUES ('%s', '%s', '%s', '%s',%d,%d,%d,'%s')\n", user.Id, user.PeerId, user.Name, user.Phone, user.Sex, user.Ptime, user.Utime, user.NickName)
-		_, err = f1.WriteString(sql)
-		if err != nil {
-			sugar.Log.Error(" Write update file is failed.Err: ", err)
-		}
-		wg.Done()
+	// 	for rows.Next() {
+	// 		err = rows.Scan(&user.Id, &user.PeerId, &user.Name, &user.Phone, &user.Sex, &user.Ptime, &user.Utime, &user.NickName, &user.Img)
+	// 		if err != nil {
+	// 			sugar.Log.Error("Query scan data is failed.The err is ", err)
+	// 		}
+	// 		sugar.Log.Info("Query a entire data is ", user)
+	// 	}
+	// 	//
+	// 	sql := fmt.Sprintf("INSERT OR REPLACE INTO sys_user (id, peer_id, name, phone, sex, ptime,utime,nickname) VALUES ('%s', '%s', '%s', '%s',%d,%d,%d,'%s')\n", user.Id, user.PeerId, user.Name, user.Phone, user.Sex, user.Ptime, user.Utime, user.NickName)
+	// 	_, err = f1.WriteString(sql)
+	// 	if err != nil {
+	// 		sugar.Log.Error(" Write update file is failed.Err: ", err)
+	// 	}
+	// 	wg.Done()
 
-	}()
+	// }()
 
 	wg.Wait()
 	// upload file to remote IPFS Node.
