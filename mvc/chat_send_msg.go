@@ -64,12 +64,10 @@ func doChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.Ch
 			return ret, err
 		}
 
-		if peerId == "" {
-			_, err = db.DB.Exec("INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, nickname, img) VALUES (?, ?, ?, ?, ?, ?, ?)",
-				peer.Id, peer.PeerId, peer.Name, "", peer.Sex, peer.Nickname, peer.Img)
-			if err != nil {
-				return ret, err
-			}
+		_, err = db.DB.Exec("INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, nickname, img) VALUES (?, ?, ?, ?, ?, ?, ?)",
+			peer.Id, peer.PeerId, peer.Name, "", peer.Sex, peer.Nickname, peer.Img)
+		if err != nil {
+			return ret, err
 		}
 	}
 
