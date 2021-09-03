@@ -76,7 +76,7 @@ func ChatSaveOfflineMsgsV2(db *Sql, value string) error {
 			}
 
 			if isWithDraw == 1 {
-				lastmsg = "撤回了一条消息"
+				lastmsg = `{"text":"撤回了一条消息"}`
 			}
 
 			_, err = db.DB.Exec("update chat_record set last_msg = ? WHERE id = ?", lastmsg, rid)
@@ -146,7 +146,7 @@ func ChatSaveOfflineMsgs(db *Sql, value string) error {
 		}
 
 		if isWithDraw == 1 {
-			lastmsg = "撤回了一条消息"
+			lastmsg = `{"text":"撤回了一条消息"}`
 		}
 
 		_, err = db.DB.Exec("update chat_record set last_msg = ? WHERE id = ?", lastmsg, rid)
