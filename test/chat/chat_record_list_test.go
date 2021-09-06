@@ -27,10 +27,10 @@ func TestChatRecordList(t *testing.T) {
 	fmt.Println(" Ping is failed,err:=", e)
 	ss := Testdb(d)
 
-	token, _ := jwt.GenerateToken("416203557629337600", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
+	token, _ := jwt.GenerateToken("436205633679659008", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
 
 	req := vo.ChatRecordListParams{
-		FromId:     "416203557629337600",
+		FromId:     "436205633679659008",
 		Token:      token,
 		CustomerId: "416418921625690112",
 		Keyword:    "",

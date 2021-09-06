@@ -39,7 +39,6 @@ func ChatUserIdList(db *Sql, value string) (userIds []string, err error) {
 	}
 	// 释放锁
 	defer rows.Close()
-
 	mapUserIds := make(map[string]string)
 	for rows.Next() {
 		var ri vo.ChatRecored

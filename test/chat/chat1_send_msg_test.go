@@ -1,7 +1,6 @@
 package chat
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -11,7 +10,6 @@ import (
 	"github.com/cosmopolitann/clouddb/sugar"
 	"github.com/cosmopolitann/clouddb/test/myipfs"
 	"github.com/cosmopolitann/clouddb/vo"
-	"github.com/libp2p/go-libp2p-core/peer"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -31,13 +29,13 @@ func TestChatSendMsg(t *testing.T) {
 		panic(err)
 	}
 
-	token, _ := jwt.GenerateToken("416418922095452160", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
+	token, _ := jwt.GenerateToken("436205633679659008", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
 
 	req := vo.ChatSendMsgParams{
-		RecordId:    "416203556291354624_416418922095452160",
+		RecordId:    "416203556291354624_436205633679659008",
 		ContentType: 2,
 		Content:     "content 222222223333",
-		FromId:      "416418922095452160",
+		FromId:      "436205633679659008",
 		ToId:        "416203556291354624",
 		Token:       token,
 		Peer: vo.ChatUserInfo{
@@ -59,18 +57,26 @@ func TestChatSendMsg(t *testing.T) {
 		panic(err)
 	}
 
-	// h2ID, _ := peer.Decode("12D3KooWS8qWyGimuUgDjakUFGJkDgvGYcMEjnj5xqojeDwf1rZm")
-	h2ID, _ := peer.Decode("12D3KooWMUCCUigkLYryEJpGC1DdnJV87x8GozccreW2SVgK7KXW")
+	// // h2ID, _ := peer.Decode("12D3KooWS8qWyGimuUgDjakUFGJkDgvGYcMEjnj5xqojeDwf1rZm")
+	// h2ID, _ := peer.Decode("12D3KooWMUCCUigkLYryEJpGC1DdnJV87x8GozccreW2SVgK7KXW")
 
-	addr, err := node.DHT.FindPeer(context.Background(), h2ID)
-	if err != nil {
-		fmt.Println("find peer err:", err)
-	}
+	// addr, err := node.DHT.FindPeer(context.Background(), h2ID)
+	// if err != nil {
+	// 	fmt.Println("find peer err:", err)
+	// }
 
-	fmt.Println("addr:", addr)
+	// fmt.Println("addr:", addr)
 
-	resp := ss.ChatSendMsg(node, string(value))
+	var cl ChatFailMessageHandler
+
+	resp := ss.ChatSendMsg(node, string(value), &cl)
 	t.Log("获取返回的数据 :=  ", resp)
 
 	select {}
+}
+
+type ChatFailMessageHandler struct{}
+
+func (cl *ChatFailMessageHandler) HandlerOfflineMessage(abc string) {
+	fmt.Println("TestChatSendMsg----\n", abc, "3333-----")
 }

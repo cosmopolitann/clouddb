@@ -553,7 +553,7 @@ func handleWithdrawMsg(db *Sql, msg vo.ChatSwapWithdrawMsgParams) (ChatMsg, erro
 			return ret, vo.ErrorAffectZero
 		}
 
-		msgStr := "撤回了一条消息"
+		msgStr := `{"text":"撤回了一条消息"}`
 
 		res, err = db.DB.Exec("UPDATE chat_record SET last_msg = ? WHERE id = ?", msgStr, ret.RecordId)
 		if err != nil {

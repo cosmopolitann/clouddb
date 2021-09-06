@@ -44,7 +44,6 @@ func CloudFileRename(db *Sql, value string) error {
 
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		err = rows.Scan(&dl)
 		if err != nil {

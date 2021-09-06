@@ -29,7 +29,6 @@ func ArticleSearch(db *Sql, value string) (data Article, e error) {
 
 	// 释放锁
 	defer rows.Close()
-
 	for rows.Next() {
 		err = rows.Scan(&dl.Id, &dl.UserId, &dl.Accesstory, &dl.AccesstoryType, &dl.Text, &dl.Tag, &dl.Ptime, &dl.PlayNum, &dl.ShareNum, &dl.Title, &dl.Thumbnail, &dl.FileName, &dl.FileSize)
 		if err != nil {

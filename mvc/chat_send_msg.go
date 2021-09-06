@@ -17,7 +17,15 @@ import (
 	ipfsCore "github.com/ipfs/go-ipfs/core"
 )
 
-func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, error) {
+func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.ChatFailMessageHandler) (ChatMsg, error) {
+	return doChatSendMsg(ipfsNode, db, value, omh)
+}
+
+func ChatSendMsg2(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, error) {
+	return doChatSendMsg(ipfsNode, db, value, FailMsgHandler)
+}
+
+func doChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.ChatFailMessageHandler) (ChatMsg, error) {
 
 	// 接收参数
 	var msg vo.ChatSendMsgParams
@@ -56,12 +64,10 @@ func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, e
 			return ret, err
 		}
 
-		if peerId == "" {
-			_, err = db.DB.Exec("INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, nickname, img) VALUES (?, ?, ?, ?, ?, ?, ?)",
-				peer.Id, peer.PeerId, peer.Name, "", peer.Sex, peer.Nickname, peer.Img)
-			if err != nil {
-				return ret, err
-			}
+		_, err = db.DB.Exec("INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, nickname, img) VALUES (?, ?, ?, ?, ?, ?, ?)",
+			peer.Id, peer.PeerId, peer.Name, "", peer.Sex, peer.Nickname, peer.Img)
+		if err != nil {
+			return ret, err
 		}
 	}
 
@@ -161,6 +167,10 @@ func ChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) (ChatMsg, e
 				sugar.Log.Error("update chat_msg send_state fail", err)
 			}
 
+			// handle offline message
+			offmsg, _ := json.Marshal(ret)
+			omh.HandlerOfflineMessage(string(offmsg))
+
 			sugar.Log.Warn("chat send msg failed")
 		} else {
 			sugar.Log.Warn("chat send msg success")
@@ -199,8 +209,6 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 		sugar.Log.Error("marshal send msg failed.", err)
 		return err
 	}
-
-	// sugar.Log.Info("ChatSendMsg: ", string(msgBytes))
 
 	err = ipfsTopic.Publish(context.Background(), msgBytes)
 	if err != nil {
