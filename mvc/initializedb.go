@@ -7,7 +7,9 @@ import (
 )
 
 type Sql struct {
-	DB *sql.DB
+	DB          *sql.DB
+	PortGateway string
+	PortApi     string
 }
 
 type NewTestNode struct {
@@ -57,7 +59,7 @@ func InitDB(path string) *sql.DB {
 	checkErr(err)
 	sugar.Log.Info("Open Sqlite3 is ok.")
 	sugar.Log.Info("Db value is ", db)
-	
+
 	return db
 }
 func checkErr(err error) {

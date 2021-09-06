@@ -759,8 +759,14 @@ func LocalNonexistent(path string) error {
 }
 
 //3. resolve ipns id address.
-func ResolverIpnsAddress() (string, error) {
-	sh = shell.NewShell("127.0.0.1:5001")
+func ResolverIpnsAddress(api, gateway string) (string, error) {
+	var port string
+	if api == "" {
+		port = "5001"
+	}
+	port = api
+	sh = shell.NewShell("127.0.0.1:" + port)
+
 	sugar.Log.Info(" ---   Resolve remote ipns address .  ---")
 	sugar.Log.Info(" ---   Remote ipns address: ", RemoteIpnsAddr)
 	result, err := sh.Resolve(RemoteIpnsAddr)
@@ -930,7 +936,7 @@ func OffLineSyncData(db *Sql, path string, ipfsNode *ipfsCore.IpfsNode) error {
 		return err
 	}
 	//3. resolve k5id.
-	hash, err := ResolverIpnsAddress()
+	hash, err := ResolverIpnsAddress(db.PortApi, db.PortGateway)
 	if err != nil {
 		return err
 	}

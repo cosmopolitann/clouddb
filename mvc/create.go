@@ -882,6 +882,16 @@ func (db *Sql) OfflineSync(ipfsNode *ipfsCore.IpfsNode, path string) error {
 	return err
 }
 
+func (db *Sql) ChangePort(portApi string, portGateway string) {
+
+	sugar.Log.Info("---- Start OffLine Sync  ------")
+
+	db.PortApi = portApi
+	db.PortGateway = portGateway
+
+	return
+}
+
 /*
 ------------------------------------------------------
 |             OffLine     Sync   End                 |
