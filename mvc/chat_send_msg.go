@@ -140,7 +140,7 @@ func doChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.Ch
 				return
 			}
 
-			<-time.After(10 * time.Second)
+			<-time.After(5 * time.Second)
 
 			tryTimes++
 			err := db.DB.QueryRow("select send_state from chat_msg where id = ?", ret.Id).Scan(&sendState)
