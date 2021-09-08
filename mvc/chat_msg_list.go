@@ -50,7 +50,7 @@ func ChatMsgList(db *Sql, value string) ([]ChatMsg, error) {
 			sugar.Log.Error("Query scan data is failed.The err is ", err)
 			return art, err
 		}
-		sugar.Log.Info("Query a entire data is ", dl)
+		// sugar.Log.Info("Query a entire data is ", dl)
 		art = append(art, dl)
 	}
 
