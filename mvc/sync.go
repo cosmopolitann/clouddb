@@ -1124,7 +1124,7 @@ func UploadFile(path string, hash string) (string, error) {
 		// }
 		// sugar.Log.Info(" THe hash value what upload file to create a hash by ipfs. ", hash_local)
 		// updateCid = hash_local
-		updateHash, err := PostFormDataPublicgatewayFile(path, "update")
+		updateHash, err := PostFormDataPublicgatewayFile(path, "update", "")
 		if err != nil {
 			return updateCid, err
 		}
@@ -1207,7 +1207,7 @@ func UploadFile(path string, hash string) (string, error) {
 	//	upload remote file to ipfs .
 	sugar.Log.Info(" start upload allcid to ipfs . ")
 
-	localHash, err := PostFormDataPublicgatewayFile(path, "local")
+	localHash, err := PostFormDataPublicgatewayFile(path, "local", "")
 	if err != nil {
 		return updateCid, err
 	}
@@ -1300,7 +1300,7 @@ func postFormDataWithSingleFile(path string) {
 }
 
 //request  public gateway api.
-func PostFormDataPublicgatewayFile(path string, name string) (string, error) {
+func PostFormDataPublicgatewayFile(path string, name string, portapi string) (string, error) {
 	sugar.Log.Info("~~~~  Start  add file  to  ipfs, use post request. ~~~~~")
 	sugar.Log.Info("  upload file path =", path)
 	client := http.Client{}
@@ -1324,11 +1324,11 @@ func PostFormDataPublicgatewayFile(path string, name string) (string, error) {
 	}
 	bodyWrite.Close() //will closed, will take w.w.boundary copy => w.writer
 	// create requet.
-	sugar.Log.Info(" request url=", "http://47.108.166.41:5001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32")
+	sugar.Log.Info(" request url=", "http://127.0.0.1:5001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32")
 
 	contentType := bodyWrite.FormDataContentType()
 	// req, err := http.NewRequest(http.MethodPost, "http://182.150.116.150:15001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
-	req, err := http.NewRequest(http.MethodPost, "http://47.108.166.41:5001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
+	req, err := http.NewRequest(http.MethodPost, "http://127.0.0.1:"+portapi+"/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
 
 	sugar.Log.Info("  request contentType =", contentType)
 	if err != nil {
@@ -1534,8 +1534,9 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 	// upload file to remote IPFS Node.
 
 	sugar.Log.Info("1111111111")
+	portapi := db.PortApi
 
-	cid, err := PostFormDataPublicgatewayFile(path, "querydata")
+	cid, err := PostFormDataPublicgatewayFile(path, "querydata", portapi)
 	if err != nil {
 		sugar.Log.Error(" Write update file is failed.Err: ", err)
 		return err, ""
