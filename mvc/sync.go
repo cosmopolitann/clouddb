@@ -1327,6 +1327,9 @@ func PostFormDataPublicgatewayFile(path string, name string, portapi string) (st
 	sugar.Log.Info(" request url=", "http://bsserver03.stariverpan.com:5001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32")
 
 	contentType := bodyWrite.FormDataContentType()
+	if portapi == "" {
+		portapi = "5001"
+	}
 	// req, err := http.NewRequest(http.MethodPost, "http://182.150.116.150:15001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
 	req, err := http.NewRequest(http.MethodPost, "http://bsserver03.stariverpan.com:"+portapi+"/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
 
