@@ -1333,7 +1333,7 @@ func PostFormDataPublicgatewayFile(path string, name string, portapi string) (st
 		portapi = "5001"
 	}
 	// req, err := http.NewRequest(http.MethodPost, "http://182.150.116.150:15001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
-	req, err := http.NewRequest(http.MethodPost, "http://bsserver03.stariverpan.com:"+portapi+"/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
+	req, err := http.NewRequest(http.MethodPost, "http://bsserver03.stariverpan.com:9094/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
 
 	sugar.Log.Info("  request contentType =", contentType)
 	if err != nil {
@@ -1578,8 +1578,14 @@ func SyncDatabaseMigration(token, path, cid string, db *Sql) error {
 	// 	return errors.New(" Token is invaild. ")
 	// }
 	// sugar.Log.Info("claim := ", claim)
+	var portarpi = db.PortApi
 
-	shell := shell.NewShell("127.0.0.1:5001")
+	//
+	if db.PortApi == "" {
+		portarpi = "5001"
+	}
+
+	shell := shell.NewShell("127.0.0.1:" + portarpi)
 	err := shell.Get(cid, path)
 	if err != nil {
 		sugar.Log.Error(" Ipfs get cid hash is failed.Err:", err)
