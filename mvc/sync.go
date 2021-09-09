@@ -1326,6 +1326,8 @@ func PostFormDataPublicgatewayFile(path string, name string, portapi string) (st
 	// create requet.
 	sugar.Log.Info(" request url=", "http://bsserver03.stariverpan.com:5001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32")
 
+	sugar.Log.Info("123--- http://bsserver03.stariverpan.com:" + portapi + "/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32")
+
 	contentType := bodyWrite.FormDataContentType()
 	if portapi == "" {
 		portapi = "5001"
@@ -1395,12 +1397,14 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 	sugar.Log.Info("open file path:= ", path)
 
 	f1, err := os.OpenFile(path+"querydata", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666) //open file
+	sugar.Log.Info(" file path:=", path+"querydata")
+
 	if err != nil {
 		sugar.Log.Errorf(" Open %s file is failed.Err:", err)
 		return err, ""
 	}
 
-	wg.Add(5)
+	wg.Add(2)
 	//query cloud_file table.
 	go func() {
 		rows, err := db.DB.Query("select id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null') from cloud_file")
@@ -1422,6 +1426,8 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 			//write to file.
 			sql := fmt.Sprintf("INSERT OR REPLACE INTO cloud_file (id,user_id,file_name,parent_id,ptime,file_cid,file_size,file_type,is_folder,thumbnail,width,height,duration) values('%s','%s','%s','%s',%d,'%s',%d,%d,%d,'%s','%s','%s',%d)\n", dl.Id, dl.UserId, dl.FileName, dl.ParentId, dl.Ptime, dl.FileCid, dl.FileSize, dl.FileType, dl.IsFolder, dl.Thumbnail, dl.Width, dl.Height, dl.Duration)
 			_, err = f1.WriteString(sql)
+			sugar.Log.Info("开始写入文件--- cloud", sql)
+
 			if err != nil {
 				sugar.Log.Error(" Write update file is failed.Err: ", err)
 			}

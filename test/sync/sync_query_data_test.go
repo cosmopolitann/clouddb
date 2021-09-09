@@ -13,7 +13,7 @@ func TestQueryAllData(t *testing.T) {
 	sugar.Log.Info("~~~~  Connecting to the sqlite3 database. ~~~~")
 	//The path is default.
 	sugar.Log.Info("Start Open Sqlite3 Database.")
-	d, err := sql.Open("sqlite3", "/Users/apple/winter/D-cloud/tables/foo.db")
+	d, err := sql.Open("sqlite3", "/Users/apple/Desktop/temp.db")
 	if err != nil {
 		panic(err)
 	}
@@ -23,7 +23,7 @@ func TestQueryAllData(t *testing.T) {
 	fmt.Println(" Ping is failed,err:=", e)
 	ss := Testdb(d)
 	value := `{"Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiIxMjMiLCJwZWVySWQiOiJwZXJyIiwibmFtZSI6Im5hbWUiLCJwaG9uZSI6InBob25lIiwic2V4IjoxLCJuaWNrTmFtZSI6Im5pY2siLCJpbWciOiJpbWciLCJleHAiOjE2MjU3NTAxMzd9.I6J8fE1SbSiNiyd-WIiSawRFQ_tGA9PEt0jHNKyxVxo"}`
-	path := "/Users/apple/winter/offline/querydata"
+	path := "/Users/apple/winter/offline/"
 
 	resp := ss.SyncQueryAllData(value, path)
 	fmt.Println("这是返回的数据 =", resp)
@@ -48,3 +48,4 @@ func TestDatabaseMigration(t *testing.T) {
 	fmt.Println("这是返回的数据 =", resp)
 
 }
+
