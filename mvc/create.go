@@ -856,6 +856,10 @@ func (db *Sql) SyncData(ipfsNode *ipfsCore.IpfsNode, dInfo string) string {
 
 // 同步 聊天 用户 数据
 
+type Cids struct {
+	Data string `json:"data"`
+}
+
 func (db *Sql) SyncQueryAllData(dInfo string, path string) string {
 
 	sugar.Log.Info("----   Start  QueryAll data     ------")
@@ -864,6 +868,10 @@ func (db *Sql) SyncQueryAllData(dInfo string, path string) string {
 	if e != nil {
 		return vo.ResponseErrorMsg(400, e.Error())
 	}
+	sugar.Log.Info("---- 返回的cid     ------", data)
+
+	// var s Cids
+	// s.Data = data
 	return vo.ResponseSuccess(data)
 }
 

@@ -92,9 +92,9 @@ type ArticleLikeParams struct {
 
 //cid
 type AddCid struct {
-	Name string `json:"Name"`
-	Hash string `json:"Hash"`
-	Size string `json:"Size"`
+	Name string      `json:"name"`
+	Cid  interface{} `json:"cid"`
+	Size int64       `json:"size"`
 }
 type JwtSysUser struct {
 	Id       string `json:"id"`       //id

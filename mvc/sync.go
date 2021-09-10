@@ -1333,7 +1333,7 @@ func PostFormDataPublicgatewayFile(path string, name string, portapi string) (st
 		portapi = "5001"
 	}
 	// req, err := http.NewRequest(http.MethodPost, "http://182.150.116.150:15001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
-	req, err := http.NewRequest(http.MethodPost, "http://bsserver03.stariverpan.com:9094/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
+	req, err := http.NewRequest(http.MethodPost, "http://bsserver03.stariverpan.com:9094/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
 
 	sugar.Log.Info("  request contentType =", contentType)
 	if err != nil {
@@ -1363,10 +1363,15 @@ func PostFormDataPublicgatewayFile(path string, name string, portapi string) (st
 		sugar.Log.Error("json is failed.", err)
 		return "", err
 	}
-	sugar.Log.Info("Add cid hash =", cid.Hash)
 	sugar.Log.Info("~~~~    Add file  to  ipfs  End~~~~~")
+	//struct ==> json
+
+	by, err := json.Marshal(cid)
+	if err != nil {
+		return "", err
+	}
 	defer file.Close()
-	return cid.Hash, nil
+	return string(by), nil
 }
 
 // query all data from  chat_msg ,cloud_file,cloud_transfer,chat_records.
@@ -1584,7 +1589,7 @@ func SyncDatabaseMigration(token, path, cid string, db *Sql) error {
 	if db.PortApi == "" {
 		portarpi = "5001"
 	}
-
+	//http://bsserver03.stariverpan.com:8080/ipfs/QmUa3hjEbYurgZawr7yj2UT8zFrDdMiNozN9L8n6V4cm2p
 	shell := shell.NewShell("127.0.0.1:" + portarpi)
 	err := shell.Get(cid, path)
 	if err != nil {
