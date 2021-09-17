@@ -16,7 +16,7 @@ func TestMoveData(t *testing.T) {
 	sugar.Log.Info("~~~~  Connecting to the sqlite3 database. ~~~~")
 	//The path is default.
 	sugar.Log.Info("Start Open Sqlite3 Database.")
-	d, err := sql.Open("sqlite3", "/Users/apple/winter/clouddb/tables/foo.db")
+	d, err := sql.Open("sqlite3", "/Users/apple/Desktop/xiaolong1.db")
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ func TestMoveData(t *testing.T) {
 	e := d.Ping()
 	log.Println(" Ping is failed,err:=", e)
 	ss := Testdb(d)
-	resp, err := ss.DbUpgrade("2")
+	resp, err := ss.DbUpgrade("3")
 	log.Println("这是返回的数据 err =", err)
 
 	log.Println("这是返回的数据 =", resp)

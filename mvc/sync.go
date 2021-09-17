@@ -16,6 +16,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cosmopolitann/clouddb/jwt"
 	"github.com/cosmopolitann/clouddb/sugar"
 	"github.com/cosmopolitann/clouddb/vo"
 	shell "github.com/ipfs/go-ipfs-api"
@@ -1383,21 +1384,21 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 		}
 	}()
 	sugar.Log.Info("~~~~ Start Query all data  ~~~~ ")
-	// var t vo.QueryAllData
+	var t vo.QueryAllData
 	wg := sync.WaitGroup{}
-	// err := json.Unmarshal([]byte(value), &t)
-	// if err != nil {
-	// 	sugar.Log.Error("Marshal is failed.Err is ", err)
-	// }
-	// sugar.Log.Info("Marshal data is  ", t)
-	// //check token is vaild.
-	// claim, b := jwt.JwtVeriyToken(t.Token)
-	// userId := claim["UserId"]
-	// sugar.Log.Info("userId := ", userId)
-	// if !b {
-	// 	return errors.New(" Token is invaild. "), ""
-	// }
-	// sugar.Log.Info("claim := ", claim)
+	err := json.Unmarshal([]byte(value), &t)
+	if err != nil {
+		sugar.Log.Error("Marshal is failed.Err is ", err)
+	}
+	sugar.Log.Info("Marshal data is  ", t)
+	//check token is vaild.
+	claim, b := jwt.JwtVeriyToken(t.Token)
+	userId := claim["UserId"].(string)
+	sugar.Log.Info("userId := ", userId)
+	if !b {
+		return errors.New(" Token is invaild. "), ""
+	}
+	sugar.Log.Info("claim := ", claim)
 
 	sugar.Log.Info("open file path:= ", path)
 
@@ -1412,7 +1413,7 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 	wg.Add(2)
 	//query cloud_file table.
 	go func() {
-		rows, err := db.DB.Query("select id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null') from cloud_file")
+		rows, err := db.DB.Query("select id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null') from cloud_file where user_id=?", userId)
 		if err != nil {
 			sugar.Log.Error("Query data is failed.Err is ", err)
 			// return arrfile, errors.New("查询下载列表信息失败")
@@ -1442,7 +1443,7 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 	}()
 	//query cloud_transfer table.
 	go func() {
-		rows, err := db.DB.Query("select id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(down_path,'null'),IFNULL(file_type,0),IFNULL(transfer_type,0),IFNULL(upload_parent_id,0),IFNULL(upload_file_id,0) from cloud_transfer")
+		rows, err := db.DB.Query("select id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(down_path,'null'),IFNULL(file_type,0),IFNULL(transfer_type,0),IFNULL(upload_parent_id,0),IFNULL(upload_file_id,0) from cloud_transfer where user_id=?", userId)
 		if err != nil {
 			sugar.Log.Error("Query data is failed.Err is ", err)
 		}

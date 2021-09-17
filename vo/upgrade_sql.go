@@ -4,7 +4,7 @@ const (
 	DBversion = "db-version"
 )
 
-var Version = "3"
+var Version = "4"
 
 var UpgradeSql = map[int][]string{
 	1: {
@@ -12,5 +12,12 @@ var UpgradeSql = map[int][]string{
 	},
 	2: {
 		`INSERT OR REPLACE INTO sys_user(id, peer_id, name, phone, sex, nickname, img) VALUES ('416418922095452160', 'QmUwp5Qaeb7Chyorzm6jffmSE65mske7DsxhHwvxuyQfSe', '小龙客服', '', 0, '小龙客服', '')`,
+	},
+	3: {
+		`CREATE TABLE "pw" (
+			"id" varchar(256),
+			"password" varchar(256),
+			"ptime" integer(256)
+		  );`,
 	},
 }

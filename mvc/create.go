@@ -965,3 +965,16 @@ func (db *Sql) DbUpgrade(dbv string) (string, error) {
 	// return vo.ResponseSuccess()
 	return newversion, err
 }
+
+// insert pw
+func (db *Sql) Pw(dbv string) (string, error) {
+
+	sugar.Log.Info("---- Start DbUpgrade   ------")
+
+	newversion, err := DbUpgrade(db, dbv)
+	// if err != nil {
+	// 	return vo.ResponseErrorMsg(400, err.Error())
+	// }
+	// return vo.ResponseSuccess()
+	return newversion, err
+}
