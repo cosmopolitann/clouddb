@@ -1334,7 +1334,7 @@ func PostFormDataPublicgatewayFile(path string, name string, portapi string) (st
 		portapi = "5001"
 	}
 	// req, err := http.NewRequest(http.MethodPost, "http://182.150.116.150:15001/api/v0/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
-	req, err := http.NewRequest(http.MethodPost, "http://bsserver03.stariverpan.com:9094/add?chunker=size-262144&pin=true&hash=sha2-256&inline-limit=32", bodyBuf)
+	req, err := http.NewRequest(http.MethodPost, "http://bsserver03.stariverpan.com:9094/add", bodyBuf)
 
 	sugar.Log.Info("  request contentType =", contentType)
 	if err != nil {
@@ -1383,18 +1383,24 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 			sugar.Log.Errorf("This is recover info:", err)
 		}
 	}()
+	wg := sync.WaitGroup{}
+
 	sugar.Log.Info("~~~~ Start Query all data  ~~~~ ")
 	var t vo.QueryAllData
-	wg := sync.WaitGroup{}
+
 	err := json.Unmarshal([]byte(value), &t)
+
 	if err != nil {
 		sugar.Log.Error("Marshal is failed.Err is ", err)
 	}
 	sugar.Log.Info("Marshal data is  ", t)
-	//check token is vaild.
+
 	claim, b := jwt.JwtVeriyToken(t.Token)
-	userId := claim["UserId"].(string)
-	sugar.Log.Info("userId := ", userId)
+
+	userId := claim["id"].(string)
+
+	sugar.Log.Info("claim is  ", userId)
+
 	if !b {
 		return errors.New(" Token is invaild. "), ""
 	}

@@ -22,7 +22,7 @@ func TestQueryAllData(t *testing.T) {
 	e := d.Ping()
 	fmt.Println(" Ping is failed,err:=", e)
 	ss := Testdb(d)
-	value := `{"Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiIxMjMiLCJwZWVySWQiOiJwZXJyIiwibmFtZSI6Im5hbWUiLCJwaG9uZSI6InBob25lIiwic2V4IjoxLCJuaWNrTmFtZSI6Im5pY2siLCJpbWciOiJpbWciLCJleHAiOjE2MjU3NTAxMzd9.I6J8fE1SbSiNiyd-WIiSawRFQ_tGA9PEt0jHNKyxVxo"}`
+	value := `{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQxNDIwNzExNDIxNTQyODA5MCIsInBlZXJJZCI6IiIsIm5hbWUiOiLmtYvor5UiLCJwaG9uZSI6IiIsInNleCI6MCwibmlja25hbWUiOiLmtYvor5UiLCJpbWciOiIiLCJwdGltZSI6MTYyNzQ0NDAwOCwidXRpbWUiOjE2Mjc0NDQwMDgsInJvbGUiOiIxIiwiZXhwIjoxNjMyMDg3ODUzfQ.mLjmNpCCq-taqNQ3NI0GhgCwhgSASdwuaZmO5oQ6DXY"}`
 	path := "/Users/apple/winter/offline/"
 
 	resp := ss.SyncQueryAllData(value, path)
