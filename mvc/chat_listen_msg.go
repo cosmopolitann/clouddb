@@ -377,6 +377,7 @@ func sendMsgAck(ipfsNode *ipfsCore.IpfsNode, db *Sql, ackMsg vo.ChatSwapAckParam
 	var err error
 
 	msgTopicKey := getRecvTopic(ackMsg.ToId)
+	msgTopicKeyCommon := getCommonRecvTopic()
 
 	ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
 	if !ok {
@@ -389,13 +390,24 @@ func sendMsgAck(ipfsNode *ipfsCore.IpfsNode, db *Sql, ackMsg vo.ChatSwapAckParam
 		TopicJoin.Store(msgTopicKey, ipfsTopic)
 	}
 
+	ipfsTopicCommon, ok := TopicJoin.Load(msgTopicKeyCommon)
+	if !ok {
+		ipfsTopicCommon, err = ipfsNode.PubSub.Join(msgTopicKeyCommon)
+		if err != nil {
+			sugar.Log.Error("PubSub.Join .Err is", err)
+			return err
+		}
+
+		TopicJoin.Store(msgTopicKeyCommon, ipfsTopicCommon)
+	}
+
 	msg := vo.ChatPacketParams{
-		Type: vo.MSG_TYPE_ACK,
-		From: ipfsNode.Identity.String(),
-		Data: ackMsg,
+		Type:    vo.MSG_TYPE_ACK,
+		From:    ipfsNode.Identity.String(),
+		Data:    ackMsg,
+		Receive: msgTopicKey,
 	}
 	msgBytes, err := json.Marshal(msg)
-
 	if err != nil {
 		sugar.Log.Error("marshal send msg failed.", err)
 		return err
@@ -403,7 +415,13 @@ func sendMsgAck(ipfsNode *ipfsCore.IpfsNode, db *Sql, ackMsg vo.ChatSwapAckParam
 
 	err = ipfsTopic.Publish(context.Background(), msgBytes)
 	if err != nil {
-		sugar.Log.Error("ChatSendMsg failed.", err)
+		sugar.Log.Error("ChatSendMsg to user failed.", err)
+		return err
+	}
+
+	err = ipfsTopicCommon.Publish(context.Background(), msgBytes)
+	if err != nil {
+		sugar.Log.Error("ChatSendMsg to common failed.", err)
 		return err
 	}
 

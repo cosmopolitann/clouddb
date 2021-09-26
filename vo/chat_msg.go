@@ -7,8 +7,8 @@ const (
 	MSG_TYPE_ACK       = "ack"                // 消息：消息回执
 	MSG_TYPE_HEARTBEAT = "heartbeat"          // 消息：心跳检查
 
-	CHAT_MSG_SWAP_TOPIC = "xiaolong-chat-swap" // 消息接收主题
-	// CHAT_MSG_SWAP_TOPIC = "xlcs" // 消息接收主题
+	CHAT_MSG_SWAP_TOPIC      = "xiaolong-chat-swap" // 消息接收主题：公共
+	CHAT_MSG_SWAP_TOPIC_USER = "xlcs"               // 消息接收主题：个人
 )
 
 const (
@@ -26,9 +26,10 @@ type ChatFailMessageHandler interface {
 }
 
 type ChatPacketParams struct {
-	Type string      `json:"type"` //类型
-	Data interface{} `json:"data"` //数据
-	From string      `json:"from"` //来源
+	Type    string      `json:"type"`    //类型
+	Data    interface{} `json:"data"`    //数据
+	From    string      `json:"from"`    //来源
+	Receive string      `json:"receive"` //接受人
 }
 
 type ChatSendMsgParams struct {

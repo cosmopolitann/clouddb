@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmopolitann/clouddb/myipfs"
 	"github.com/cosmopolitann/clouddb/sugar"
 	"github.com/cosmopolitann/clouddb/vo"
 
@@ -28,12 +29,12 @@ func TestChatWithdrawMsg(t *testing.T) {
 		panic(err)
 	}
 
-	token, _ := jwt.GenerateToken("411647506288480256", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
+	token, _ := jwt.GenerateToken("436205633679659008", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
 
 	req := vo.ChatWithdrawMsgParams{
-		MsgId:  "412578662399873024",
-		FromId: "411647506288480256",
-		ToId:   "411642059200401408",
+		MsgId:  "448527052560142336",
+		FromId: "436205633679659008",
+		ToId:   "416203556291354624",
 		Token:  token,
 	}
 
@@ -41,7 +42,15 @@ func TestChatWithdrawMsg(t *testing.T) {
 
 	ss := Testdb(d)
 
-	resp := ss.ChatWithdrawMsg(nil, string(value))
+	node, err := myipfs.GetIpfsNode("/Users/apple/projects/clouddb/test/chat/.ipfs")
+	if err != nil {
+		sugar.Log.Info("xxxxx----", err)
+		panic(err)
+	}
+
+	resp := ss.ChatWithdrawMsg(node, string(value))
 	t.Log("获取返回的数据 :=  ", resp)
+
+	select {}
 
 }
