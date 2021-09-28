@@ -128,3 +128,7 @@ type OfflineMessageV2 struct {
 	User     UserBaseInfo     `json:"user"`     // 消息发送人
 	Messages []OfflineMessage `json:"messages"` // 离线消息列表
 }
+
+type OfflineMessageCount struct {
+	Token string `json:"token"` //token
+}

@@ -80,10 +80,10 @@ func GetClaim(bareStr string) (jwt.MapClaims, string, bool) {
 		errFlag = TOKEN_ERR_LEN
 		log.Println(" 错误 ：=", errFlag)
 	}
-	log.Println(" 获取 bareArr= ", bareArr)
+	// log.Println(" 获取 bareArr= ", bareArr)
 
 	token, err := ParseToken(bareArr[1])
-	log.Println(" token 的值= ", token)
+	// log.Println(" token 的值= ", token)
 
 	if err != nil || token.Claims == nil {
 		errFlag = TOKEN_ERR_EXPIRED
