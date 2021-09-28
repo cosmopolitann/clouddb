@@ -29,17 +29,17 @@ func TestChatSendMsg(t *testing.T) {
 		panic(err)
 	}
 
-	token, _ := jwt.GenerateToken("436205633679659008", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
+	token, _ := jwt.GenerateToken("449268169828208640", "peerid", "name", "phone", "nickname", "img", "2", 0, 1, 1, 30*24*60*60)
 
 	req := vo.ChatSendMsgParams{
-		RecordId:    "416203556291354624_436205633679659008",
+		RecordId:    "449268169828208640_449268758863679488",
 		ContentType: 2,
 		Content:     "content 222222223333",
-		FromId:      "436205633679659008",
-		ToId:        "416203556291354624",
+		FromId:      "449268169828208640",
+		ToId:        "449268758863679488",
 		Token:       token,
 		Peer: vo.ChatUserInfo{
-			Id:       "416203556291354624",
+			Id:       "449268758863679488",
 			PeerId:   "xxxxyyyyy",
 			Name:     "ooxxyy",
 			Sex:      1,

@@ -140,7 +140,7 @@ func doChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.Ch
 				return
 			}
 
-			<-time.After(5 * time.Second)
+			<-time.After(3 * time.Second)
 
 			tryTimes++
 			err := db.DB.QueryRow("select send_state from chat_msg where id = ?", ret.Id).Scan(&sendState)
@@ -233,8 +233,6 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 		sugar.Log.Error("ChatSendMsg to common failed.", err)
 		return err
 	}
-
-	sugar.Log.Debugf("ChatSendMsg topic: %s, data: %v", msgTopicKey, msgPacket)
 
 	return nil
 }
