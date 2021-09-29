@@ -112,6 +112,8 @@ func Delete(db *Sql, value string) error {
 		return errors.New(" Delete file is failed. ")
 	}
 	sugar.Log.Info(" Array ids : ", delArray)
+	
+	delArray = []string{}
 	return nil
 
 }

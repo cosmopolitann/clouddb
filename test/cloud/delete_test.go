@@ -3,8 +3,9 @@ package cloud
 import (
 	"database/sql"
 	"fmt"
-	"github.com/cosmopolitann/clouddb/sugar"
 	"testing"
+
+	"github.com/cosmopolitann/clouddb/sugar"
 )
 
 func TestDelete(t *testing.T) {
@@ -12,7 +13,7 @@ func TestDelete(t *testing.T) {
 	sugar.Log.Info("~~~~  Connecting to the sqlite3 database. ~~~~")
 	//The path is default.
 	sugar.Log.Info("Start Open Sqlite3 Database.")
-	d, err := sql.Open("sqlite3", "/Users/apple/winter/D-cloud/tables/foo.db")
+	d, err := sql.Open("sqlite3", "/Users/apple/Desktop/temp.db")
 	if err != nil {
 		panic(err)
 	}
@@ -23,8 +24,12 @@ func TestDelete(t *testing.T) {
 
 	ss := Testdb(d)
 	//
-	value := `{"Id":"4324","UserId":"124","Accesstory":"20","AccesstoryType":1,"Text":"1","Tag":"1","PlayNum":3,"ShareNum":4}
-`
+	// value := `{"Id":"55","UserId":"414207114215428090","Accesstory":"20","AccesstoryType":1,"Text":"1","Tag":"1","PlayNum":3,"ShareNum":4}
+	// `
+	value := `[
+		"44","55"
+		]`
+
 	//	resp:= ss.DeleteOneFile(value)
 	//
 	//	fmt.Println("这是返回的数据 =",resp)
