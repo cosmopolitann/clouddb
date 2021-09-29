@@ -95,7 +95,7 @@ func ChatListenMsgBlocked(ipfsNode *ipfsCore.IpfsNode, db *Sql, token string, cl
 			continue
 		}
 
-		// sugar.Log.Infof("Data ==== %+v", data)
+		sugar.Log.Infof("Data ==== %+v", data)
 
 		if data == nil {
 			sugar.Log.Error("*pubsub.Message is nil, i will return")
