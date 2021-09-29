@@ -51,6 +51,7 @@ func ChatListenMsgUpdateUser(ipfsNode *ipfsCore.IpfsNode, token string) error {
 }
 
 func ChatListenMsgBlocked(ipfsNode *ipfsCore.IpfsNode, db *Sql, token string, clh vo.ChatListenHandler) error {
+	return nil
 
 	sugar.Log.Info("Enter ChatListenMsgBlocked Function")
 
