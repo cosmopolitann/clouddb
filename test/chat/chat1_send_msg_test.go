@@ -4,11 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
-	"os"
-	"runtime/pprof"
 	"testing"
-	"time"
 
 	"github.com/cosmopolitann/clouddb/jwt"
 	"github.com/cosmopolitann/clouddb/sugar"
@@ -18,18 +14,18 @@ import (
 )
 
 func TestChatSendMsg(t *testing.T) {
-	f, err := os.OpenFile("./mem.prof", os.O_RDWR|os.O_CREATE, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
+	// f, err := os.OpenFile("./mem.prof", os.O_RDWR|os.O_CREATE, 0644)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer f.Close()
 
-	cpuf, err := os.OpenFile("./cpu.prof", os.O_RDWR|os.O_CREATE, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer cpuf.Close()
-	pprof.StartCPUProfile(cpuf)
+	// cpuf, err := os.OpenFile("./cpu.prof", os.O_RDWR|os.O_CREATE, 0644)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer cpuf.Close()
+	// pprof.StartCPUProfile(cpuf)
 
 	sugar.InitLogger()
 	sugar.Log.Info("~~~~  Connecting to the sqlite3 database. ~~~~")
@@ -89,12 +85,12 @@ func TestChatSendMsg(t *testing.T) {
 	resp := ss.ChatSendMsg(node, string(value), &cl)
 	t.Log("获取返回的数据 :=  ", resp)
 
-	for i := 0; i < 5; i++ {
-		time.Sleep(10 * time.Second)
-	}
+	// for i := 0; i < 5; i++ {
+	// 	time.Sleep(10 * time.Second)
+	// }
 
-	pprof.StopCPUProfile()
-	pprof.WriteHeapProfile(f)
+	// pprof.StopCPUProfile()
+	// pprof.WriteHeapProfile(f)
 }
 
 type ChatFailMessageHandler struct{}
