@@ -184,7 +184,7 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 
 	var err error
 
-	msgTopicKey := getRecvTopic(swapMsg.ToId)
+	// msgTopicKey := getRecvTopic(swapMsg.ToId)
 	msgTopicKeyCommon := getCommonRecvTopic()
 
 	// ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
@@ -210,10 +210,10 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 	}
 
 	msgPacket := vo.ChatPacketParams{
-		Type:    vo.MSG_TYPE_NEW,
-		From:    ipfsNode.Identity.String(),
-		Data:    swapMsg,
-		Receive: msgTopicKey,
+		Type: vo.MSG_TYPE_NEW,
+		From: ipfsNode.Identity.String(),
+		Data: swapMsg,
+		// Receive: msgTopicKey,
 	}
 	msgBytes, err := json.Marshal(msgPacket)
 	if err != nil {

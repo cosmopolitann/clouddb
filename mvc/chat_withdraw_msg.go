@@ -75,19 +75,19 @@ func ChatWithdrawMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) error {
 		Token:    "",
 	}
 
-	msgTopicKey := getRecvTopic(msg.ToId)
+	// msgTopicKey := getRecvTopic(msg.ToId)
 	msgTopicKeyCommon := getCommonRecvTopic()
 
-	ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
-	if !ok {
-		ipfsTopic, err = ipfsNode.PubSub.Join(msgTopicKey)
-		if err != nil {
-			sugar.Log.Error("PubSub.Join .Err is", err)
-			return err
-		}
+	// ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
+	// if !ok {
+	// 	ipfsTopic, err = ipfsNode.PubSub.Join(msgTopicKey)
+	// 	if err != nil {
+	// 		sugar.Log.Error("PubSub.Join .Err is", err)
+	// 		return err
+	// 	}
 
-		TopicJoin.Store(msgTopicKey, ipfsTopic)
-	}
+	// 	TopicJoin.Store(msgTopicKey, ipfsTopic)
+	// }
 
 	ipfsTopicCommon, ok := TopicJoin.Load(msgTopicKeyCommon)
 	if !ok {
@@ -101,10 +101,10 @@ func ChatWithdrawMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) error {
 	}
 
 	msgPacket := vo.ChatPacketParams{
-		Type:    vo.MSG_TYPE_WITHDRAW,
-		From:    ipfsNode.Identity.String(),
-		Data:    swapMsg,
-		Receive: msgTopicKey,
+		Type: vo.MSG_TYPE_WITHDRAW,
+		From: ipfsNode.Identity.String(),
+		Data: swapMsg,
+		// Receive: msgTopicKey,
 	}
 
 	msgBytes, err := json.Marshal(msgPacket)
@@ -113,12 +113,12 @@ func ChatWithdrawMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) error {
 		return err
 	}
 
-	sugar.Log.Debug("send topic:", msgTopicKey)
-	err = ipfsTopic.Publish(context.Background(), msgBytes)
-	if err != nil {
-		sugar.Log.Error("publish failed.", err)
-		return err
-	}
+	// sugar.Log.Debug("send topic:", msgTopicKey)
+	// err = ipfsTopic.Publish(context.Background(), msgBytes)
+	// if err != nil {
+	// 	sugar.Log.Error("publish failed.", err)
+	// 	return err
+	// }
 
 	sugar.Log.Debug("send topic:", msgTopicKeyCommon)
 	err = ipfsTopicCommon.Publish(context.Background(), msgBytes)

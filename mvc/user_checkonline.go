@@ -49,9 +49,10 @@ func FriendCheckOnline(ipfsNode *ipfsCore.IpfsNode, value string) error {
 			From: ipfsNode.Identity.Pretty(),
 		}
 
-		msgTopicKey := getRecvTopic(toUserId)
+		// msgTopicKey := getRecvTopic(toUserId)
+		msgTopicKeyCommon := getCommonRecvTopic()
 
-		ipfsTopic, err := GetPubsubTopic(ipfsNode, msgTopicKey)
+		ipfsTopic, err := GetPubsubTopic(ipfsNode, msgTopicKeyCommon)
 		if err != nil {
 			sugar.Log.Error("GetPubsubTopic failed.", err)
 			return err
@@ -82,7 +83,7 @@ func FriendCheckOnline(ipfsNode *ipfsCore.IpfsNode, value string) error {
 			return err
 		}
 
-		sugar.Log.Debugf("ChatSendMsg topic: %s, userid: %s, data: %v", msgTopicKey, toUserId, msgPacket)
+		sugar.Log.Debugf("ChatSendMsg topic: %s, userid: %s, data: %v", msgTopicKeyCommon, toUserId, msgPacket)
 	}
 
 	return nil
