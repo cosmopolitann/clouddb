@@ -185,29 +185,29 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 	var err error
 
 	msgTopicKey := getRecvTopic(swapMsg.ToId)
-	// msgTopicKeyCommon := getCommonRecvTopic()
+	msgTopicKeyCommon := getCommonRecvTopic()
 
-	ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
-	if !ok {
-		ipfsTopic, err = ipfsNode.PubSub.Join(msgTopicKey)
-		if err != nil {
-			sugar.Log.Error("PubSub.Join .Err is", err)
-			return err
-		}
-
-		TopicJoin.Store(msgTopicKey, ipfsTopic)
-	}
-
-	// ipfsTopicCommon, ok := TopicJoin.Load(msgTopicKeyCommon)
+	// ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
 	// if !ok {
-	// 	ipfsTopicCommon, err = ipfsNode.PubSub.Join(msgTopicKeyCommon)
+	// 	ipfsTopic, err = ipfsNode.PubSub.Join(msgTopicKey)
 	// 	if err != nil {
 	// 		sugar.Log.Error("PubSub.Join .Err is", err)
 	// 		return err
 	// 	}
 
-	// 	TopicJoin.Store(msgTopicKeyCommon, ipfsTopicCommon)
+	// 	TopicJoin.Store(msgTopicKey, ipfsTopic)
 	// }
+
+	ipfsTopicCommon, ok := TopicJoin.Load(msgTopicKeyCommon)
+	if !ok {
+		ipfsTopicCommon, err = ipfsNode.PubSub.Join(msgTopicKeyCommon)
+		if err != nil {
+			sugar.Log.Error("PubSub.Join .Err is", err)
+			return err
+		}
+
+		TopicJoin.Store(msgTopicKeyCommon, ipfsTopicCommon)
+	}
 
 	msgPacket := vo.ChatPacketParams{
 		Type:    vo.MSG_TYPE_NEW,
@@ -221,17 +221,17 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 		return err
 	}
 
-	err = ipfsTopic.Publish(context.Background(), msgBytes)
-	if err != nil {
-		sugar.Log.Error("ChatSendMsg to user failed.", err)
-		return err
-	}
-
-	// err = ipfsTopicCommon.Publish(context.Background(), msgBytes)
+	// err = ipfsTopic.Publish(context.Background(), msgBytes)
 	// if err != nil {
-	// 	sugar.Log.Error("ChatSendMsg to common failed.", err)
+	// 	sugar.Log.Error("ChatSendMsg to user failed.", err)
 	// 	return err
 	// }
+
+	err = ipfsTopicCommon.Publish(context.Background(), msgBytes)
+	if err != nil {
+		sugar.Log.Error("ChatSendMsg to common failed.", err)
+		return err
+	}
 
 	return nil
 }
