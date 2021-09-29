@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/cosmopolitann/clouddb/jwt"
 	"github.com/cosmopolitann/clouddb/sugar"
 	"github.com/cosmopolitann/clouddb/vo"
 )
@@ -158,4 +159,32 @@ func ChatSaveOfflineMsgs(db *Sql, value string) error {
 	}
 
 	return nil
+}
+
+func ChatGetOfflineMsgCount(db *Sql, value string) int {
+	var num int
+	var msg vo.OfflineMessageCount
+
+	err := json.Unmarshal([]byte(value), &msg)
+	if err != nil {
+		sugar.Log.Error("Marshal is failed.Err is ", err)
+		return num
+	}
+
+	//校验 token 是否 满足
+	claim, b := jwt.JwtVeriyToken(msg.Token)
+	if !b {
+		sugar.Log.Error("token 失效")
+		return 0
+	}
+
+	userId := claim["id"].(string)
+
+	err = db.DB.QueryRow("select count(*) as num from chat_msg where is_read = 0 and to_id = ?", userId).Scan(&num)
+	if err != nil {
+		sugar.Log.Error("select chat_msg Failed.", err)
+		return 0
+	}
+
+	return num
 }

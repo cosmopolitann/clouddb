@@ -752,6 +752,14 @@ func (db *Sql) ChatSaveOfflineMsgsV2(value string) error {
 	return err
 }
 
+// ChatSaveOfflineMsgs  更新离线消息
+func (db *Sql) ChatGetOfflineMsgCount(value string) string {
+
+	num := ChatGetOfflineMsgCount(db, value)
+
+	return vo.ResponseSuccess(num)
+}
+
 /*
 ------------------------------------------------------
 |                    Chat  End                       |

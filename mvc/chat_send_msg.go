@@ -130,19 +130,17 @@ func doChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.Ch
 		var sendState int64
 		var sendFail string
 
-		tryTimes := 0
 		maxTimes := 3
 
-		for {
+		for i := 0; i < maxTimes; i++ {
 			err = chatSendMsg(ipfsNode, swapMsg)
 			if err != nil {
 				sugar.Log.Errorf("send chat msg failed. msgid: %s, err: %v", ret.Id, err)
 				return
 			}
 
-			<-time.After(5 * time.Second)
+			time.Sleep(3 * time.Second)
 
-			tryTimes++
 			err := db.DB.QueryRow("select send_state from chat_msg where id = ?", ret.Id).Scan(&sendState)
 			if err != nil {
 				sendState = -1
@@ -153,12 +151,13 @@ func doChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.Ch
 
 			if sendState != 0 {
 				break
-			} else if tryTimes >= maxTimes {
-				sendState = -1
-				sendFail = "failed"
-				sugar.Log.Warnf("try over max times %d", maxTimes)
-				break
 			}
+		}
+
+		if sendState == 0 {
+			sendState = -1
+			sendFail = "failed"
+			sugar.Log.Warnf("try over max times %d", maxTimes)
 		}
 
 		if sendState == -1 {
@@ -185,44 +184,64 @@ func chatSendMsg(ipfsNode *ipfsCore.IpfsNode, swapMsg vo.ChatSwapMsgParams) erro
 
 	var err error
 
-	msgPacket := vo.ChatPacketParams{
-		Type: vo.MSG_TYPE_NEW,
-		From: ipfsNode.Identity.String(),
-		Data: swapMsg,
-	}
+	// msgTopicKey := getRecvTopic(swapMsg.ToId)
+	msgTopicKeyCommon := getCommonRecvTopic()
 
-	msgTopicKey := getRecvTopic(swapMsg.ToId)
+	// ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
+	// if !ok {
+	// 	ipfsTopic, err = ipfsNode.PubSub.Join(msgTopicKey)
+	// 	if err != nil {
+	// 		sugar.Log.Error("PubSub.Join .Err is", err)
+	// 		return err
+	// 	}
 
-	ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
+	// 	TopicJoin.Store(msgTopicKey, ipfsTopic)
+	// }
+
+	ipfsTopicCommon, ok := TopicJoin.Load(msgTopicKeyCommon)
 	if !ok {
-		ipfsTopic, err = ipfsNode.PubSub.Join(msgTopicKey)
+		ipfsTopicCommon, err = ipfsNode.PubSub.Join(msgTopicKeyCommon)
 		if err != nil {
 			sugar.Log.Error("PubSub.Join .Err is", err)
 			return err
 		}
 
-		TopicJoin.Store(msgTopicKey, ipfsTopic)
+		TopicJoin.Store(msgTopicKeyCommon, ipfsTopicCommon)
 	}
 
+	msgPacket := vo.ChatPacketParams{
+		Type: vo.MSG_TYPE_NEW,
+		From: ipfsNode.Identity.String(),
+		Data: swapMsg,
+		// Receive: msgTopicKey,
+	}
 	msgBytes, err := json.Marshal(msgPacket)
 	if err != nil {
 		sugar.Log.Error("marshal send msg failed.", err)
 		return err
 	}
 
-	err = ipfsTopic.Publish(context.Background(), msgBytes)
+	// err = ipfsTopic.Publish(context.Background(), msgBytes)
+	// if err != nil {
+	// 	sugar.Log.Error("ChatSendMsg to user failed.", err)
+	// 	return err
+	// }
+
+	err = ipfsTopicCommon.Publish(context.Background(), msgBytes)
 	if err != nil {
-		sugar.Log.Error("ChatSendMsg failed.", err)
+		sugar.Log.Error("ChatSendMsg to common failed.", err)
 		return err
 	}
-
-	sugar.Log.Debugf("ChatSendMsg topic: %s, data: %v", msgTopicKey, msgPacket)
 
 	return nil
 }
 
-// 获取广播topic
-func getRecvTopic(toUserId string) string {
-	// return vo.CHAT_MSG_SWAP_TOPIC + toUserId
+// 公共消息接收主题
+func getCommonRecvTopic() string {
 	return vo.CHAT_MSG_SWAP_TOPIC
+}
+
+// 个人消息接收主题
+func getRecvTopic(toUserId string) string {
+	return vo.CHAT_MSG_SWAP_TOPIC_USER + toUserId
 }

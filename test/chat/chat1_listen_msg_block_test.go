@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cosmopolitann/clouddb/jwt"
 	"github.com/cosmopolitann/clouddb/myipfs"
 	"github.com/cosmopolitann/clouddb/sugar"
 
-	"github.com/cosmopolitann/clouddb/jwt"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -59,6 +59,7 @@ func TestChatListenMsgBlock(t *testing.T) {
 	// 	}
 
 	// }()
+	// token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ0OTI2ODE2OTgyODIwODY0MCJ9.CyqHotJIzhRQ7CnGjM3ZIRWq3Hm-N1WLqG8hXjQpihw"
 
 	err = ss.ChatListenMsgBlocked(node, token, &cl)
 	if err != nil {

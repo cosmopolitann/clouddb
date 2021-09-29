@@ -75,34 +75,55 @@ func ChatWithdrawMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string) error {
 		Token:    "",
 	}
 
-	msgBytes, err := json.Marshal(map[string]interface{}{
-		"type": vo.MSG_TYPE_WITHDRAW,
-		"from": ipfsNode.Identity.String(),
-		"data": swapMsg,
-	})
-	if err != nil {
-		sugar.Log.Error("marshal send msg failed.", err)
-		return err
-	}
+	// msgTopicKey := getRecvTopic(msg.ToId)
+	msgTopicKeyCommon := getCommonRecvTopic()
 
-	msgTopicKey := getRecvTopic(msg.ToId)
+	// ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
+	// if !ok {
+	// 	ipfsTopic, err = ipfsNode.PubSub.Join(msgTopicKey)
+	// 	if err != nil {
+	// 		sugar.Log.Error("PubSub.Join .Err is", err)
+	// 		return err
+	// 	}
 
-	ipfsTopic, ok := TopicJoin.Load(msgTopicKey)
+	// 	TopicJoin.Store(msgTopicKey, ipfsTopic)
+	// }
+
+	ipfsTopicCommon, ok := TopicJoin.Load(msgTopicKeyCommon)
 	if !ok {
-		ipfsTopic, err = ipfsNode.PubSub.Join(msgTopicKey)
+		ipfsTopicCommon, err = ipfsNode.PubSub.Join(msgTopicKeyCommon)
 		if err != nil {
 			sugar.Log.Error("PubSub.Join .Err is", err)
 			return err
 		}
 
-		TopicJoin.Store(msgTopicKey, ipfsTopic)
+		TopicJoin.Store(msgTopicKeyCommon, ipfsTopicCommon)
 	}
 
-	ctx := context.Background()
+	msgPacket := vo.ChatPacketParams{
+		Type: vo.MSG_TYPE_WITHDRAW,
+		From: ipfsNode.Identity.String(),
+		Data: swapMsg,
+		// Receive: msgTopicKey,
+	}
 
-	err = ipfsTopic.Publish(ctx, msgBytes)
+	msgBytes, err := json.Marshal(msgPacket)
 	if err != nil {
-		sugar.Log.Error("publish failed.", err)
+		sugar.Log.Error("marshal send msg failed.", err)
+		return err
+	}
+
+	// sugar.Log.Debug("send topic:", msgTopicKey)
+	// err = ipfsTopic.Publish(context.Background(), msgBytes)
+	// if err != nil {
+	// 	sugar.Log.Error("publish failed.", err)
+	// 	return err
+	// }
+
+	sugar.Log.Debug("send topic:", msgTopicKeyCommon)
+	err = ipfsTopicCommon.Publish(context.Background(), msgBytes)
+	if err != nil {
+		sugar.Log.Error("ChatSendMsg to common failed.", err)
 		return err
 	}
 
