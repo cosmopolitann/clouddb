@@ -112,70 +112,70 @@ func doChatSendMsg(ipfsNode *ipfsCore.IpfsNode, db *Sql, value string, omh vo.Ch
 		return ret, err
 	}
 
-	swapMsg := vo.ChatSwapMsgParams{
-		Id:          ret.Id,
-		RecordId:    ret.RecordId,
-		ContentType: ret.ContentType,
-		Content:     ret.Content,
-		FromId:      ret.FromId,
-		ToId:        ret.ToId,
-		IsWithdraw:  ret.IsWithdraw,
-		IsRead:      ret.IsRead,
-		Ptime:       ret.Ptime,
-		Token:       "",
-		User:        user,
-	}
+	// swapMsg := vo.ChatSwapMsgParams{
+	// 	Id:          ret.Id,
+	// 	RecordId:    ret.RecordId,
+	// 	ContentType: ret.ContentType,
+	// 	Content:     ret.Content,
+	// 	FromId:      ret.FromId,
+	// 	ToId:        ret.ToId,
+	// 	IsWithdraw:  ret.IsWithdraw,
+	// 	IsRead:      ret.IsRead,
+	// 	Ptime:       ret.Ptime,
+	// 	Token:       "",
+	// 	User:        user,
+	// }
 
-	go func() {
-		var sendState int64
-		var sendFail string
+	// go func() {
+	// 	var sendState int64
+	// 	var sendFail string
 
-		tryTimes := 0
-		maxTimes := 3
+	// 	tryTimes := 0
+	// 	maxTimes := 3
 
-		for {
-			err = chatSendMsg(ipfsNode, swapMsg)
-			if err != nil {
-				sugar.Log.Errorf("send chat msg failed. msgid: %s, err: %v", ret.Id, err)
-				return
-			}
+	// 	for {
+	// 		err = chatSendMsg(ipfsNode, swapMsg)
+	// 		if err != nil {
+	// 			sugar.Log.Errorf("send chat msg failed. msgid: %s, err: %v", ret.Id, err)
+	// 			return
+	// 		}
 
-			<-time.After(3 * time.Second)
+	// 		<-time.After(3 * time.Second)
 
-			tryTimes++
-			err := db.DB.QueryRow("select send_state from chat_msg where id = ?", ret.Id).Scan(&sendState)
-			if err != nil {
-				sendState = -1
-				sendFail = err.Error()
-				sugar.Log.Error("select send_state from chat_msg err: ", err)
-				break
-			}
+	// 		tryTimes++
+	// 		err := db.DB.QueryRow("select send_state from chat_msg where id = ?", ret.Id).Scan(&sendState)
+	// 		if err != nil {
+	// 			sendState = -1
+	// 			sendFail = err.Error()
+	// 			sugar.Log.Error("select send_state from chat_msg err: ", err)
+	// 			break
+	// 		}
 
-			if sendState != 0 {
-				break
-			} else if tryTimes >= maxTimes {
-				sendState = -1
-				sendFail = "failed"
-				sugar.Log.Warnf("try over max times %d", maxTimes)
-				break
-			}
-		}
+	// 		if sendState != 0 {
+	// 			break
+	// 		} else if tryTimes >= maxTimes {
+	// 			sendState = -1
+	// 			sendFail = "failed"
+	// 			sugar.Log.Warnf("try over max times %d", maxTimes)
+	// 			break
+	// 		}
+	// 	}
 
-		if sendState == -1 {
-			_, err := db.DB.Exec("update chat_msg set send_state = ?, send_fail = ? where id = ?", sendState, sendFail, ret.Id)
-			if err != nil {
-				sugar.Log.Error("update chat_msg send_state fail", err)
-			}
+	// 	if sendState == -1 {
+	// 		_, err := db.DB.Exec("update chat_msg set send_state = ?, send_fail = ? where id = ?", sendState, sendFail, ret.Id)
+	// 		if err != nil {
+	// 			sugar.Log.Error("update chat_msg send_state fail", err)
+	// 		}
 
-			// handle offline message
-			offmsg, _ := json.Marshal(ret)
-			omh.HandlerOfflineMessage(string(offmsg))
+	// 		// handle offline message
+	// 		offmsg, _ := json.Marshal(ret)
+	// 		omh.HandlerOfflineMessage(string(offmsg))
 
-			sugar.Log.Warn("chat send msg failed")
-		} else {
-			sugar.Log.Warn("chat send msg success")
-		}
-	}()
+	// 		sugar.Log.Warn("chat send msg failed")
+	// 	} else {
+	// 		sugar.Log.Warn("chat send msg success")
+	// 	}
+	// }()
 
 	// 发布消息
 	return ret, nil
