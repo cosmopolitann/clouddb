@@ -1419,7 +1419,7 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 	wg.Add(2)
 	//query cloud_file table.
 	go func() {
-		rows, err := db.DB.Query("select id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null') from cloud_file where user_id=?", userId)
+		rows, err := db.DB.Query("select id,IFNULL(user_id,'null'),IFNULL(file_name,'null'),IFNULL(parent_id,0),IFNULL(ptime,0),IFNULL(file_cid,'null'),IFNULL(file_size,0),IFNULL(file_type,0),IFNULL(is_folder,0),IFNULL(thumbnail,'null',IFNULL(width,'null',IFNULL(height,'null',IFNULL(duration,0) from cloud_file where user_id=?", userId)
 		if err != nil {
 			sugar.Log.Error("Query data is failed.Err is ", err)
 			// return arrfile, errors.New("查询下载列表信息失败")
@@ -1429,7 +1429,7 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 		defer rows.Close()
 		for rows.Next() {
 			var dl File
-			err = rows.Scan(&dl.Id, &dl.UserId, &dl.FileName, &dl.ParentId, &dl.Ptime, &dl.FileCid, &dl.FileSize, &dl.FileType, &dl.IsFolder, &dl.Thumbnail)
+			err = rows.Scan(&dl.Id, &dl.UserId, &dl.FileName, &dl.ParentId, &dl.Ptime, &dl.FileCid, &dl.FileSize, &dl.FileType, &dl.IsFolder, &dl.Thumbnail, &dl.Width, &dl.Height, &dl.Duration)
 			if err != nil {
 				sugar.Log.Error("Query scan data is failed.The err is ", err)
 				// return arrfile, err
