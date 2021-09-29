@@ -1564,11 +1564,11 @@ func SyncQueryAllData(value string, db *Sql, path string) (error, string) {
 	}
 	sugar.Log.Info(" Cid := ", cid)
 	//delete querydata file.
-	// err = RemoveCidPathFile(path)
-	// if err != nil {
-	// 	sugar.Log.Error(" Write update file is failed.Err: ", err)
-	// 	return err, ""
-	// }
+	err = RemoveCidPathFile(path + "querydata")
+	if err != nil {
+		sugar.Log.Error(" Write update file is failed.Err: ", err)
+		return err, ""
+	}
 	sugar.Log.Info("~~~~ Query all data  End ~~~~ ")
 	return nil, cid
 }
